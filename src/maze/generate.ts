@@ -20,10 +20,31 @@ function shuffle<T>(arr: T[], rand: () => number): T[] {
   return a;
 }
 
+const STEP_DIRS: [number, number][] = [
+  [-2, 0],
+  [2, 0],
+  [0, -2],
+  [0, 2],
+];
+
 export interface GenerateOptions {
   widenPasses?: number;
   /** Number of single-width loop openings (braids). Never creates rooms. */
   loopCount?: number;
+  /**
+   * Growing-tree random-pick chance (0 = recursive backtracker rivers,
+   * 1 = Prim-like bushy trees). High values create more dead ends and
+   * left/right choices.
+   */
+  randomPick?: number;
+}
+
+export interface MazeStats {
+  deadEnds: number;
+  junctions: number;
+  /** Solution-path cells that have a wrong-way branch. */
+  pathChoices: number;
+  pathLength: number;
 }
 
 export interface GeneratedMaze {
@@ -32,12 +53,15 @@ export interface GeneratedMaze {
   goal: Pos;
   /** Shortest-path length from start to goal (in steps). */
   pathLength: number;
+  stats: MazeStats;
 }
 
 /**
- * Perfect maze via recursive backtracker on odd×odd grid.
- * Outer border is always wall. Start/goal are floor cells.
- * Goal is the farthest floor cell from start — always solvable.
+ * Perfect maze via growing tree on an odd×odd grid.
+ *
+ * High randomPick (default 0.62) prefers Prim-style expansion so the tree
+ * is bushy: many junctions and cul-de-sacs, not one long guided corridor.
+ * Outer border stays wall. Goal is the farthest floor cell — always solvable.
  */
 export function generateMaze(
   rows: number,
@@ -51,8 +75,8 @@ export function generateMaze(
       : widenPassesOrOptions;
   const widenPasses = options.widenPasses ?? 0;
   const loopCount = options.loopCount ?? 0;
+  const randomPick = options.randomPick ?? 0.62;
 
-  // Ensure odd dimensions so carving lands on cell centers
   const R = rows % 2 === 0 ? rows + 1 : rows;
   const C = cols % 2 === 0 ? cols + 1 : cols;
   const rand = mulberry32(seed);
@@ -64,30 +88,38 @@ export function generateMaze(
   const inBounds = (r: number, c: number) =>
     r > 0 && r < R - 1 && c > 0 && c < C - 1;
 
-  const carve = (r: number, c: number) => {
-    grid[r][c] = 0;
-    const dirs = shuffle(
-      [
-        [-2, 0],
-        [2, 0],
-        [0, -2],
-        [0, 2],
-      ] as [number, number][],
-      rand,
-    );
-    for (const [dr, dc] of dirs) {
+  const unvisitedNeighbors = (r: number, c: number): [number, number][] => {
+    const next: [number, number][] = [];
+    for (const [dr, dc] of STEP_DIRS) {
       const nr = r + dr;
       const nc = c + dc;
-      if (inBounds(nr, nc) && grid[nr][nc] === 1) {
-        grid[r + dr / 2][c + dc / 2] = 0;
-        carve(nr, nc);
-      }
+      if (inBounds(nr, nc) && grid[nr][nc] === 1) next.push([nr, nc]);
     }
+    return next;
   };
 
-  carve(1, 1);
+  // Growing tree: mix newest-cell (rivers) and random-cell (branches).
+  const frontier: Pos[] = [{ r: 1, c: 1 }];
+  grid[1][1] = 0;
 
-  // Optional widening — unused by the new curve (creates open rooms).
+  while (frontier.length) {
+    const pickNewest = rand() >= randomPick;
+    const idx = pickNewest
+      ? frontier.length - 1
+      : Math.floor(rand() * frontier.length);
+    const cur = frontier[idx]!;
+    const optionsN = unvisitedNeighbors(cur.r, cur.c);
+    if (optionsN.length === 0) {
+      frontier.splice(idx, 1);
+      continue;
+    }
+    const [nr, nc] = optionsN[Math.floor(rand() * optionsN.length)]!;
+    grid[(cur.r + nr) / 2][(cur.c + nc) / 2] = 0;
+    grid[nr][nc] = 0;
+    frontier.push({ r: nr, c: nc });
+  }
+
+  // Optional widening — unused by the current curve (creates open rooms).
   for (let pass = 0; pass < widenPasses; pass++) {
     const candidates: Pos[] = [];
     for (let r = 1; r < R - 1; r++) {
@@ -108,8 +140,7 @@ export function generateMaze(
     for (const p of picks) grid[p.r][p.c] = 0;
   }
 
-  // Sparse braids: open a wall that sits between two opposite floors only.
-  // That adds a loop without turning corridors into rooms.
+  // Sparse braids: open a wall between two opposite floors only.
   if (loopCount > 0) {
     const braids: Pos[] = [];
     for (let r = 1; r < R - 1; r++) {
@@ -130,8 +161,9 @@ export function generateMaze(
 
   const start: Pos = { r: 1, c: 1 };
   const { pos: goal, dist: pathLength } = farthestCell(grid, start);
+  const stats = analyzeMaze(grid, start, goal, pathLength);
 
-  return { grid, start, goal, pathLength };
+  return { grid, start, goal, pathLength, stats };
 }
 
 function farthestCell(
@@ -174,6 +206,95 @@ function farthestCell(
   return { pos: far, dist: dist[far.r][far.c] };
 }
 
+function floorExits(grid: Cell[][], r: number, c: number): number {
+  let n = 0;
+  if (grid[r - 1]?.[c] === 0) n++;
+  if (grid[r + 1]?.[c] === 0) n++;
+  if (grid[r][c - 1] === 0) n++;
+  if (grid[r][c + 1] === 0) n++;
+  return n;
+}
+
+function shortestPathCells(
+  grid: Cell[][],
+  start: Pos,
+  goal: Pos,
+): Set<string> {
+  const R = grid.length;
+  const C = grid[0].length;
+  const key = (p: Pos) => `${p.r},${p.c}`;
+  const prev = new Map<string, Pos | null>();
+  const q: Pos[] = [start];
+  prev.set(key(start), null);
+
+  while (q.length) {
+    const cur = q.shift()!;
+    if (cur.r === goal.r && cur.c === goal.c) {
+      const onPath = new Set<string>();
+      let p: Pos | null = cur;
+      while (p) {
+        onPath.add(key(p));
+        p = prev.get(key(p)) ?? null;
+      }
+      return onPath;
+    }
+    for (const [dr, dc] of [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ] as const) {
+      const n = { r: cur.r + dr, c: cur.c + dc };
+      if (
+        n.r >= 0 &&
+        n.r < R &&
+        n.c >= 0 &&
+        n.c < C &&
+        grid[n.r][n.c] === 0 &&
+        !prev.has(key(n))
+      ) {
+        prev.set(key(n), cur);
+        q.push(n);
+      }
+    }
+  }
+  return new Set();
+}
+
+export function analyzeMaze(
+  grid: Cell[][],
+  start: Pos,
+  goal: Pos,
+  pathLength: number,
+): MazeStats {
+  const R = grid.length;
+  const C = grid[0].length;
+  let deadEnds = 0;
+  let junctions = 0;
+
+  for (let r = 1; r < R - 1; r++) {
+    for (let c = 1; c < C - 1; c++) {
+      if (grid[r][c] !== 0) continue;
+      const exits = floorExits(grid, r, c);
+      if (exits === 1 && !(r === start.r && c === start.c)) deadEnds++;
+      if (exits >= 3) junctions++;
+    }
+  }
+
+  const onPath = shortestPathCells(grid, start, goal);
+  let pathChoices = 0;
+  for (const token of onPath) {
+    const [rs, cs] = token.split(',');
+    const r = Number(rs);
+    const c = Number(cs);
+    if (r === goal.r && c === goal.c) continue;
+    const exits = floorExits(grid, r, c);
+    if (exits >= 3) pathChoices++;
+  }
+
+  return { deadEnds, junctions, pathChoices, pathLength };
+}
+
 /** Count single-exit floor cells (dead ends), excluding start. */
 export function countDeadEnds(grid: Cell[][], start: Pos): number {
   const R = grid.length;
@@ -183,12 +304,7 @@ export function countDeadEnds(grid: Cell[][], start: Pos): number {
     for (let c = 1; c < C - 1; c++) {
       if (grid[r][c] !== 0) continue;
       if (r === start.r && c === start.c) continue;
-      let exits = 0;
-      if (grid[r - 1][c] === 0) exits++;
-      if (grid[r + 1][c] === 0) exits++;
-      if (grid[r][c - 1] === 0) exits++;
-      if (grid[r][c + 1] === 0) exits++;
-      if (exits === 1) n++;
+      if (floorExits(grid, r, c) === 1) n++;
     }
   }
   return n;

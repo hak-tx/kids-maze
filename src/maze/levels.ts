@@ -1,25 +1,22 @@
 import type { LevelConfig } from '../types';
 
 /**
- * 16 real mazes for a sharp ~7-year-old player.
+ * 16 branchy mazes for a sharp ~7-year-old.
  *
- * Every level is a single-width recursive-backtracker maze (widenPasses: 0).
- * Early boards are already 15–19 odd, with long farthest-cell solutions and
- * lots of dead ends — not the old 7×7 wide-path starters.
+ * Growing-tree generation (high random-pick) produces many junctions and
+ * cul-de-sacs — not the old long guided corridor. Every level is
+ * single-width (widenPasses: 0). Goal is the farthest cell.
  *
- * Mid/late boards grow toward 21–25 so they still fit an iPad Mini with
- * readable cells. A few later levels add sparse opposite-wall loops
- * (loopCount) for interest, never open rooms.
- *
- * Seeds were picked for branchiness + long solution path and are deterministic.
+ * Seeds were scored for dead ends + solution-path choice points.
+ * Late levels add sparse opposite-wall loops only (never open rooms).
  */
 export const LEVELS: LevelConfig[] = [
   {
     id: 1,
     name: 'Meadow Trek',
-    rows: 15,
-    cols: 15,
-    seed: 6560,
+    rows: 17,
+    cols: 17,
+    seed: 15457,
     difficulty: 'easy',
     theme: 'meadow',
     widenPasses: 0,
@@ -28,9 +25,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 2,
     name: 'Hedge Hunt',
-    rows: 15,
-    cols: 17,
-    seed: 3542,
+    rows: 17,
+    cols: 19,
+    seed: 15345,
     difficulty: 'easy',
     theme: 'hedge',
     widenPasses: 0,
@@ -39,9 +36,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 3,
     name: 'Orchard Twist',
-    rows: 17,
-    cols: 17,
-    seed: 2405,
+    rows: 19,
+    cols: 19,
+    seed: 1225,
     difficulty: 'easy',
     theme: 'orchard',
     widenPasses: 0,
@@ -50,9 +47,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 4,
     name: 'River Bend',
-    rows: 17,
-    cols: 19,
-    seed: 4298,
+    rows: 19,
+    cols: 21,
+    seed: 3645,
     difficulty: 'easy',
     theme: 'river',
     widenPasses: 0,
@@ -61,9 +58,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 5,
     name: 'Forest Fork',
-    rows: 19,
-    cols: 19,
-    seed: 4217,
+    rows: 21,
+    cols: 21,
+    seed: 12757,
     difficulty: 'easy',
     theme: 'forest',
     widenPasses: 0,
@@ -72,9 +69,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 6,
     name: 'Canyon Crawl',
-    rows: 19,
+    rows: 21,
     cols: 21,
-    seed: 71,
+    seed: 15005,
     difficulty: 'medium',
     theme: 'canyon',
     widenPasses: 0,
@@ -84,8 +81,8 @@ export const LEVELS: LevelConfig[] = [
     id: 7,
     name: 'Sunset Switchback',
     rows: 21,
-    cols: 21,
-    seed: 950,
+    cols: 23,
+    seed: 15105,
     difficulty: 'medium',
     theme: 'sunset',
     widenPasses: 0,
@@ -94,9 +91,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 8,
     name: 'Tide Pools',
-    rows: 21,
-    cols: 21,
-    seed: 2750,
+    rows: 23,
+    cols: 23,
+    seed: 5585,
     difficulty: 'medium',
     theme: 'tide',
     widenPasses: 0,
@@ -105,9 +102,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 9,
     name: 'Crystal Cave',
-    rows: 21,
+    rows: 23,
     cols: 23,
-    seed: 1952,
+    seed: 11597,
     difficulty: 'medium',
     theme: 'crystal',
     widenPasses: 0,
@@ -117,8 +114,8 @@ export const LEVELS: LevelConfig[] = [
     id: 10,
     name: 'Lava Labyrinth',
     rows: 23,
-    cols: 23,
-    seed: 1064,
+    cols: 25,
+    seed: 10593,
     difficulty: 'medium',
     theme: 'lava',
     widenPasses: 0,
@@ -127,9 +124,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 11,
     name: 'Storm Spiral',
-    rows: 23,
-    cols: 23,
-    seed: 2549,
+    rows: 25,
+    cols: 25,
+    seed: 4377,
     difficulty: 'hard',
     theme: 'storm',
     widenPasses: 0,
@@ -138,9 +135,9 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 12,
     name: 'Aurora Alley',
-    rows: 23,
+    rows: 25,
     cols: 25,
-    seed: 5450,
+    seed: 3253,
     difficulty: 'hard',
     theme: 'aurora',
     widenPasses: 0,
@@ -151,7 +148,7 @@ export const LEVELS: LevelConfig[] = [
     name: 'Moon Maze',
     rows: 25,
     cols: 25,
-    seed: 1559,
+    seed: 2225,
     difficulty: 'hard',
     theme: 'moon',
     widenPasses: 0,
@@ -162,7 +159,7 @@ export const LEVELS: LevelConfig[] = [
     name: 'Dragon Den',
     rows: 25,
     cols: 25,
-    seed: 6419,
+    seed: 5089,
     difficulty: 'hard',
     theme: 'dragon',
     widenPasses: 0,
@@ -173,7 +170,7 @@ export const LEVELS: LevelConfig[] = [
     name: 'Galaxy Gate',
     rows: 25,
     cols: 25,
-    seed: 4337,
+    seed: 761,
     difficulty: 'hard',
     theme: 'galaxy',
     widenPasses: 0,
@@ -184,7 +181,7 @@ export const LEVELS: LevelConfig[] = [
     name: 'Champion Cup',
     rows: 25,
     cols: 25,
-    seed: 5699,
+    seed: 4157,
     difficulty: 'hard',
     theme: 'champion',
     widenPasses: 0,

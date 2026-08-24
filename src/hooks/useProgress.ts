@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 import type { Progress } from '../types';
 import { LEVELS } from '../maze/levels';
 
-/** Bumped to v2 after the difficulty overhaul so old unlocks do not carry over. */
-const KEY = 'kids-maze-progress-v2';
+/** Bumped to v3 after the branchier-maze retune so old unlocks do not carry over. */
+const KEY = 'kids-maze-progress-v3';
 
 function load(): Progress {
   try {
