@@ -1,0 +1,18 @@
+{
+  "name": "Kids Maze",
+  "short_name": "Kids Maze",
+  "description": "Fun progressive maze game for young kids",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E8F1FF",
+  "theme_color": "#5B8DEF",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
