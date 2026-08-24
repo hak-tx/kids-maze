@@ -548,7 +548,7 @@ body {
   overflow: visible;
 }
 .tail-wag {
-  transform-origin: 44px 20px;
+  transform-origin: 45px 44px;
   animation: wag 1.1s ease-in-out infinite;
 }
 .character-svg.celebrating {
