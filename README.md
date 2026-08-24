@@ -1,32 +1,40 @@
-# React + TypeScript + Vite
+# Kids Maze
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Fun, colorful progressive maze game for young kids (through ~age 7). Touch-first for tablets (iPad portrait/landscape), with keyboard support on desktop.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **15 levels** — easy (wide & short) → medium → harder (longer, more dead ends)
+- Seeded deterministic mazes that are always solvable
+- Finger drag along the path **or** tap adjacent cells
+- Arrow keys / WASD on desktop
+- Hint button pulses the next turn (not the full solution)
+- Level select with unlock progress saved in `localStorage`
+- Win celebration + big **Next Level** button
+- PWA-friendly viewport (no zoom glitches), no ads/accounts/tracking
+- Sound off by default (no sound in v1)
 
-## React Compiler
+## Quick start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open the URL Vite prints (usually `http://localhost:5173`).
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Local dev server with HMR |
+| `npm run build` | Typecheck + production build to `dist/` |
+| `npm run preview` | Serve the production build locally |
+
+## Deploy (e.g. Vercel)
+
+This repo includes `vercel.json` with an SPA fallback rewrite. Connect the GitHub repo to Vercel; build command `npm run build`, output `dist`.
+
+## Stack
+
+Vite + React + TypeScript. No heavy UI libraries.
