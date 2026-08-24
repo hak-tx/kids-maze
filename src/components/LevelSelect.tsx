@@ -1,5 +1,5 @@
 import { LEVELS } from '../maze/levels';
-import type { Difficulty } from '../types';
+import type { Difficulty, MazeTheme } from '../types';
 
 interface LevelSelectProps {
   unlocked: number;
@@ -12,6 +12,25 @@ const DIFF_LABEL: Record<Difficulty, string> = {
   easy: 'Trail',
   medium: 'Trek',
   hard: 'Quest',
+};
+
+const THEME_ICON: Record<MazeTheme, string> = {
+  meadow: '🌿',
+  hedge: '🌳',
+  orchard: '🍎',
+  river: '💧',
+  forest: '🌲',
+  canyon: '🧡',
+  sunset: '🌅',
+  tide: '🌊',
+  crystal: '💎',
+  lava: '🔥',
+  storm: '⚡',
+  aurora: '✨',
+  moon: '🌙',
+  dragon: '🐉',
+  galaxy: '🪐',
+  champion: '🏆',
 };
 
 export function LevelSelect({
@@ -48,6 +67,11 @@ export function LevelSelect({
               }
             >
               <span className="level-stripe" aria-hidden="true" />
+              {open && (
+                <span className="level-theme-icon" aria-hidden="true">
+                  {THEME_ICON[lvl.theme]}
+                </span>
+              )}
               <span className="level-num">{open ? lvl.id : '🔒'}</span>
               <span className="level-name">{open ? lvl.name : 'Locked'}</span>
               <span className="level-meta">

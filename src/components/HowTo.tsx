@@ -1,3 +1,5 @@
+import { GoalPortal, StartFlag } from './Markers';
+
 interface HowToProps {
   onBack: () => void;
 }
@@ -15,8 +17,9 @@ export function HowTo({ onBack }: HowToProps) {
 
       <ol className="howto-list">
         <li>
-          <span className="howto-icon" aria-hidden="true">
-            🚩
+          <span className="howto-icon howto-svgs" aria-hidden="true">
+            <StartFlag size={28} />
+            <GoalPortal size={28} />
           </span>
           <div>
             <strong>Start</strong> at the green flag. Race to the{' '}

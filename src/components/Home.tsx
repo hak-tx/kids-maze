@@ -1,5 +1,5 @@
 import { Character } from './Character';
-import { MazeMark } from './Markers';
+import { GoalPortal, MazeMark } from './Markers';
 import { MuteButton } from './MuteButton';
 import { playTap } from '../sound';
 
@@ -45,7 +45,10 @@ export function Home({
           </div>
         </div>
         <h1 className="home-title">Kids Maze</h1>
-        <p className="home-tagline">Wiggle to the glowing star!</p>
+        <p className="home-tagline">
+          <GoalPortal size={28} />
+          <span>Wiggle to the glowing star!</span>
+        </p>
       </div>
 
       <div className="home-actions">
