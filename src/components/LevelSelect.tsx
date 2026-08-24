@@ -9,9 +9,9 @@ interface LevelSelectProps {
 }
 
 const DIFF_LABEL: Record<Difficulty, string> = {
-  easy: 'Easy',
-  medium: 'Medium',
-  hard: 'Hard',
+  easy: 'Trail',
+  medium: 'Trek',
+  hard: 'Quest',
 };
 
 export function LevelSelect({
@@ -38,19 +38,31 @@ export function LevelSelect({
             <button
               key={lvl.id}
               type="button"
-              className={`level-card diff-${lvl.difficulty} ${open ? '' : 'locked'} ${done ? 'done' : ''}`}
+              className={`level-card theme-${lvl.theme} diff-${lvl.difficulty} ${open ? '' : 'locked'} ${done ? 'done' : ''}`}
               disabled={!open}
               onClick={() => open && onSelect(lvl.id)}
               aria-label={
                 open
-                  ? `Level ${lvl.id}: ${lvl.name}, ${DIFF_LABEL[lvl.difficulty]}`
+                  ? `Level ${lvl.id}: ${lvl.name}, ${DIFF_LABEL[lvl.difficulty]}, ${lvl.rows} by ${lvl.cols}`
                   : `Level ${lvl.id} locked`
               }
             >
+              <span className="level-stripe" aria-hidden="true" />
               <span className="level-num">{open ? lvl.id : '🔒'}</span>
               <span className="level-name">{open ? lvl.name : 'Locked'}</span>
-              <span className="level-diff">{DIFF_LABEL[lvl.difficulty]}</span>
-              {done && <span className="level-star" aria-hidden="true">⭐</span>}
+              <span className="level-meta">
+                <span className="level-diff">{DIFF_LABEL[lvl.difficulty]}</span>
+                {open && (
+                  <span className="level-size">
+                    {lvl.rows}×{lvl.cols}
+                  </span>
+                )}
+              </span>
+              {done && (
+                <span className="level-star" aria-hidden="true">
+                  ★
+                </span>
+              )}
             </button>
           );
         })}

@@ -7,6 +7,25 @@ export interface Pos {
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
+/** Visual theme for walls, floors, and accents. */
+export type MazeTheme =
+  | 'meadow'
+  | 'hedge'
+  | 'orchard'
+  | 'river'
+  | 'forest'
+  | 'canyon'
+  | 'sunset'
+  | 'tide'
+  | 'crystal'
+  | 'lava'
+  | 'storm'
+  | 'aurora'
+  | 'moon'
+  | 'dragon'
+  | 'galaxy'
+  | 'champion';
+
 export interface LevelConfig {
   id: number;
   name: string;
@@ -14,8 +33,11 @@ export interface LevelConfig {
   cols: number;
   seed: number;
   difficulty: Difficulty;
-  /** Extra carving passes to widen corridors (kids-friendly). */
+  theme: MazeTheme;
+  /** Extra carving passes to widen corridors. Keep 0 for real mazes. */
   widenPasses: number;
+  /** Sparse opposite-wall knock-downs that add loops (not open rooms). */
+  loopCount: number;
 }
 
 export type Screen = 'home' | 'levels' | 'howto' | 'play';

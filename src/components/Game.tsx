@@ -3,7 +3,9 @@ import type { Pos } from '../types';
 import { getLevel, LEVELS } from '../maze/levels';
 import { generateMaze } from '../maze/generate';
 import { canMove, nextHintStep } from '../maze/pathfind';
+import { playHint, playMove, playWin } from '../sound';
 import { MazeBoard } from './MazeBoard';
+import { MuteButton } from './MuteButton';
 import { WinModal } from './WinModal';
 
 interface GameProps {
@@ -11,23 +13,34 @@ interface GameProps {
   onWin: (levelId: number) => void;
   onHome: () => void;
   onSelectLevel: (id: number) => void;
+  muted: boolean;
+  onToggleMute: () => void;
 }
 
-export function Game({ levelId, onWin, onHome, onSelectLevel }: GameProps) {
+export function Game({
+  levelId,
+  onWin,
+  onHome,
+  onSelectLevel,
+  muted,
+  onToggleMute,
+}: GameProps) {
   const config = getLevel(levelId)!;
 
   const maze = useMemo(
     () =>
-      generateMaze(config.rows, config.cols, config.seed, config.widenPasses),
+      generateMaze(config.rows, config.cols, config.seed, {
+        widenPasses: config.widenPasses,
+        loopCount: config.loopCount,
+      }),
     [config],
   );
 
   const [player, setPlayer] = useState<Pos>(maze.start);
   const [won, setWon] = useState(false);
   const [hintCell, setHintCell] = useState<Pos | null>(null);
-  const [moveKey, setMoveKey] = useState(0); // force remount on replay
+  const [moveKey, setMoveKey] = useState(0);
 
-  // Reset when level or replay changes
   useEffect(() => {
     setPlayer(maze.start);
     setWon(false);
@@ -41,13 +54,15 @@ export function Game({ levelId, onWin, onHome, onSelectLevel }: GameProps) {
       setHintCell(null);
       if (to.r === maze.goal.r && to.c === maze.goal.c) {
         setWon(true);
+        playWin(muted);
         onWin(levelId);
+      } else {
+        playMove(muted);
       }
     },
-    [won, maze.goal, onWin, levelId],
+    [won, maze.goal, onWin, levelId, muted],
   );
 
-  // Keyboard: arrows + WASD
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (won) return;
@@ -78,12 +93,13 @@ export function Game({ levelId, onWin, onHome, onSelectLevel }: GameProps) {
     if (won) return;
     const next = nextHintStep(maze.grid, player, maze.goal);
     setHintCell(next);
+    playHint(muted);
   };
 
   const hasNext = levelId < LEVELS.length;
 
   return (
-    <div className="screen play-screen">
+    <div className={`screen play-screen theme-${config.theme}`}>
       <header className="play-header">
         <button
           type="button"
@@ -99,7 +115,7 @@ export function Game({ levelId, onWin, onHome, onSelectLevel }: GameProps) {
         </div>
         <button
           type="button"
-          className="btn btn-hint btn-lg"
+          className="btn btn-hint"
           onClick={showHint}
           disabled={won}
         >
@@ -116,9 +132,11 @@ export function Game({ levelId, onWin, onHome, onSelectLevel }: GameProps) {
         hintCell={hintCell}
         onMove={moveTo}
         won={won}
+        theme={config.theme}
       />
 
       <footer className="play-footer">
+        <MuteButton muted={muted} onToggle={onToggleMute} />
         <button
           type="button"
           className="btn btn-secondary btn-lg"

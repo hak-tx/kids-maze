@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import type { Screen } from './types';
 import { useProgress } from './hooks/useProgress';
+import { useMute } from './hooks/useMute';
 import { Home } from './components/Home';
 import { LevelSelect } from './components/LevelSelect';
 import { HowTo } from './components/HowTo';
@@ -10,6 +11,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [levelId, setLevelId] = useState(1);
   const { progress, completeLevel, isUnlocked } = useProgress();
+  const { muted, toggleMuted } = useMute();
 
   const playLevel = useCallback(
     (id: number) => {
@@ -30,6 +32,8 @@ export default function App() {
           onPlay={playCurrent}
           onLevels={() => setScreen('levels')}
           onHowTo={() => setScreen('howto')}
+          muted={muted}
+          onToggleMute={toggleMuted}
         />
       )}
       {screen === 'levels' && (
@@ -47,6 +51,8 @@ export default function App() {
           onWin={completeLevel}
           onHome={() => setScreen('home')}
           onSelectLevel={playLevel}
+          muted={muted}
+          onToggleMute={toggleMuted}
         />
       )}
     </div>

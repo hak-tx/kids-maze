@@ -1,11 +1,11 @@
 {
   "name": "Kids Maze",
   "short_name": "Kids Maze",
-  "description": "Fun progressive maze game for young kids",
+  "description": "Colorful maze adventure for kids — real mazes from level 1",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#E8F1FF",
-  "theme_color": "#5B8DEF",
+  "background_color": "#DBEAFE",
+  "theme_color": "#4C6EF5",
   "orientation": "any",
   "icons": [
     {
