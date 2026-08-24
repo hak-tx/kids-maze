@@ -1,3 +1,5 @@
+import { Character } from './Character';
+
 interface WinModalProps {
   levelId: number;
   levelName: string;
@@ -19,12 +21,15 @@ export function WinModal({
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="win-title">
       <div className="modal win-modal">
         <div className="confetti" aria-hidden="true">
-          {Array.from({ length: 12 }, (_, i) => (
+          {Array.from({ length: 18 }, (_, i) => (
             <span key={i} className={`confetti-piece c${i % 6}`} />
           ))}
         </div>
-        <div className="win-emoji" aria-hidden="true">🎉</div>
-        <h2 id="win-title">You did it!</h2>
+        <div className="win-burst" aria-hidden="true" />
+        <div className="win-hero" aria-hidden="true">
+          <Character size={72} celebrating />
+        </div>
+        <h2 id="win-title">{hasNext ? 'You did it!' : 'Champion!'}</h2>
         <p className="win-sub">
           Level {levelId}: {levelName}
         </p>
@@ -34,7 +39,7 @@ export function WinModal({
               Next Level →
             </button>
           ) : (
-            <p className="win-champ">You finished every maze! Champion! 🏆</p>
+            <p className="win-champ">You finished every maze! 🏆</p>
           )}
           <button type="button" className="btn btn-secondary btn-lg" onClick={onReplay}>
             Play Again

@@ -20,16 +20,38 @@ function shuffle<T>(arr: T[], rand: () => number): T[] {
   return a;
 }
 
+export interface GenerateOptions {
+  widenPasses?: number;
+  /** Number of single-width loop openings (braids). Never creates rooms. */
+  loopCount?: number;
+}
+
+export interface GeneratedMaze {
+  grid: Cell[][];
+  start: Pos;
+  goal: Pos;
+  /** Shortest-path length from start to goal (in steps). */
+  pathLength: number;
+}
+
 /**
  * Perfect maze via recursive backtracker on odd×odd grid.
  * Outer border is always wall. Start/goal are floor cells.
+ * Goal is the farthest floor cell from start — always solvable.
  */
 export function generateMaze(
   rows: number,
   cols: number,
   seed: number,
-  widenPasses = 0,
-): { grid: Cell[][]; start: Pos; goal: Pos } {
+  widenPassesOrOptions: number | GenerateOptions = 0,
+): GeneratedMaze {
+  const options: GenerateOptions =
+    typeof widenPassesOrOptions === 'number'
+      ? { widenPasses: widenPassesOrOptions, loopCount: 0 }
+      : widenPassesOrOptions;
+  const widenPasses = options.widenPasses ?? 0;
+  const loopCount = options.loopCount ?? 0;
+
   // Ensure odd dimensions so carving lands on cell centers
   const R = rows % 2 === 0 ? rows + 1 : rows;
   const C = cols % 2 === 0 ? cols + 1 : cols;
@@ -63,10 +85,9 @@ export function generateMaze(
     }
   };
 
-  // Start carving from (1,1)
   carve(1, 1);
 
-  // Widen some corridors for younger kids (remove random walls between floors)
+  // Optional widening — unused by the new curve (creates open rooms).
   for (let pass = 0; pass < widenPasses; pass++) {
     const candidates: Pos[] = [];
     for (let r = 1; r < R - 1; r++) {
@@ -77,7 +98,6 @@ export function generateMaze(
           (grid[r + 1][c] === 0 ? 1 : 0) +
           (grid[r][c - 1] === 0 ? 1 : 0) +
           (grid[r][c + 1] === 0 ? 1 : 0);
-        // Knock down walls that sit between two floors (opens loops / wider feel)
         if (neighbors >= 2) candidates.push({ r, c });
       }
     }
@@ -88,14 +108,36 @@ export function generateMaze(
     for (const p of picks) grid[p.r][p.c] = 0;
   }
 
-  const start: Pos = { r: 1, c: 1 };
-  // Goal: farthest floor cell from start (BFS) — always solvable
-  const goal = farthestCell(grid, start);
+  // Sparse braids: open a wall that sits between two opposite floors only.
+  // That adds a loop without turning corridors into rooms.
+  if (loopCount > 0) {
+    const braids: Pos[] = [];
+    for (let r = 1; r < R - 1; r++) {
+      for (let c = 1; c < C - 1; c++) {
+        if (grid[r][c] !== 1) continue;
+        const up = grid[r - 1][c] === 0;
+        const down = grid[r + 1][c] === 0;
+        const left = grid[r][c - 1] === 0;
+        const right = grid[r][c + 1] === 0;
+        const vertical = up && down && !left && !right;
+        const horizontal = left && right && !up && !down;
+        if (vertical || horizontal) braids.push({ r, c });
+      }
+    }
+    const picks = shuffle(braids, rand).slice(0, loopCount);
+    for (const p of picks) grid[p.r][p.c] = 0;
+  }
 
-  return { grid, start, goal };
+  const start: Pos = { r: 1, c: 1 };
+  const { pos: goal, dist: pathLength } = farthestCell(grid, start);
+
+  return { grid, start, goal, pathLength };
 }
 
-function farthestCell(grid: Cell[][], start: Pos): Pos {
+function farthestCell(
+  grid: Cell[][],
+  start: Pos,
+): { pos: Pos; dist: number } {
   const R = grid.length;
   const C = grid[0].length;
   const dist: number[][] = Array.from({ length: R }, () =>
@@ -129,5 +171,25 @@ function farthestCell(grid: Cell[][], start: Pos): Pos {
       }
     }
   }
-  return far;
+  return { pos: far, dist: dist[far.r][far.c] };
+}
+
+/** Count single-exit floor cells (dead ends), excluding start. */
+export function countDeadEnds(grid: Cell[][], start: Pos): number {
+  const R = grid.length;
+  const C = grid[0].length;
+  let n = 0;
+  for (let r = 1; r < R - 1; r++) {
+    for (let c = 1; c < C - 1; c++) {
+      if (grid[r][c] !== 0) continue;
+      if (r === start.r && c === start.c) continue;
+      let exits = 0;
+      if (grid[r - 1][c] === 0) exits++;
+      if (grid[r + 1][c] === 0) exits++;
+      if (grid[r][c - 1] === 0) exits++;
+      if (grid[r][c + 1] === 0) exits++;
+      if (exits === 1) n++;
+    }
+  }
+  return n;
 }

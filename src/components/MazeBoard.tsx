@@ -6,9 +6,10 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import type { Cell, Pos } from '../types';
+import type { Cell, MazeTheme, Pos } from '../types';
 import { canMove } from '../maze/pathfind';
 import { Character } from './Character';
+import { GoalPortal, StartFlag } from './Markers';
 
 interface MazeBoardProps {
   grid: Cell[][];
@@ -18,6 +19,7 @@ interface MazeBoardProps {
   hintCell: Pos | null;
   onMove: (to: Pos) => void;
   won: boolean;
+  theme: MazeTheme;
 }
 
 export function MazeBoard({
@@ -28,6 +30,7 @@ export function MazeBoard({
   hintCell,
   onMove,
   won,
+  theme,
 }: MazeBoardProps) {
   const boardRef = useRef<HTMLDivElement>(null);
   const [cellPx, setCellPx] = useState(40);
@@ -37,7 +40,8 @@ export function MazeBoard({
   const rows = grid.length;
   const cols = grid[0]?.length ?? 0;
 
-  // Fit maze into available space (tablet-friendly)
+  // Fit maze into available space. Late 25×25 boards still stay readable
+  // on an iPad Mini (min 24px) without overflowing the play area.
   useEffect(() => {
     const el = boardRef.current;
     if (!el) return;
@@ -48,7 +52,7 @@ export function MazeBoard({
       const availH = parent.clientHeight - 8;
       const byW = Math.floor(availW / cols);
       const byH = Math.floor(availH / rows);
-      const size = Math.max(28, Math.min(56, byW, byH));
+      const size = Math.max(24, Math.min(52, byW, byH));
       setCellPx(size);
     };
     fit();
@@ -101,11 +105,9 @@ export function MazeBoard({
     if (!cell) return;
     const from = lastCell.current ?? player;
     if (cell.r === from.r && cell.c === from.c) return;
-    // Allow continuous drag along path — step through adjacent cells
     if (canMove(grid, from, cell)) {
       tryStep(cell, from);
     } else {
-      // If jumped diagonally/far, try nearest adjacent toward finger
       const candidates: Pos[] = [
         { r: from.r - 1, c: from.c },
         { r: from.r + 1, c: from.c },
@@ -132,13 +134,15 @@ export function MazeBoard({
     dragging.current = false;
   };
 
-  const charSize = useMemo(() => Math.max(20, cellPx * 0.72), [cellPx]);
+  const charSize = useMemo(() => Math.max(18, cellPx * 0.78), [cellPx]);
+  const markSize = useMemo(() => Math.max(14, cellPx * 0.7), [cellPx]);
 
   return (
     <div className="maze-board-wrap">
       <div
         ref={boardRef}
-        className="maze-board"
+        className={`maze-board theme-${theme}`}
+        data-theme={theme}
         style={{
           width: cols * cellPx,
           height: rows * cellPx,
@@ -176,24 +180,11 @@ export function MazeBoard({
                   .join(' ')}
                 style={{ width: cellPx, height: cellPx }}
               >
-                {isStart && !isPlayer && !isGoal && (
-                  <span className="marker start-marker" title="Start">
-                    🚩
-                  </span>
-                )}
-                {isGoal && !isPlayer && (
-                  <span className="marker goal-marker" title="Goal">
-                    ⭐
-                  </span>
-                )}
-                {isGoal && isPlayer && (
-                  <span className="marker goal-marker" title="Goal">
-                    ⭐
-                  </span>
-                )}
+                {isStart && !isPlayer && !isGoal && <StartFlag size={markSize} />}
+                {isGoal && <GoalPortal size={markSize} />}
                 {isPlayer && (
-                  <div className="player-wrap">
-                    <Character size={charSize} />
+                  <div className={`player-wrap${won ? ' won' : ''}`}>
+                    <Character size={charSize} celebrating={won} />
                   </div>
                 )}
               </div>
