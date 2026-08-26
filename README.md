@@ -14,7 +14,7 @@ Colorful progressive maze game for kids (through ~age 7, with a real challenge f
 - Hint button pulses the next turn (not the full solution)
 - Level select with unlock progress saved in `localStorage` (`kids-maze-progress-v3`)
 - Win celebration + big **Next Level** button
-- Optional soft sounds, **muted by default**
+- Upbeat looping chiptune music + soft sound effects (starts on the first tap)
 - PWA-friendly viewport (no zoom glitches), no ads/accounts/tracking
 
 ## Quick start
