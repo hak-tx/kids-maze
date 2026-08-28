@@ -13,7 +13,7 @@ import type { LevelConfig } from '../types';
 export const LEVELS: LevelConfig[] = [
   {
     id: 1,
-    name: 'Meadow Trek',
+    name: 'Coral Cove',
     rows: 17,
     cols: 17,
     seed: 15457,
@@ -24,7 +24,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 2,
-    name: 'Hedge Hunt',
+    name: 'Kelp Forest',
     rows: 17,
     cols: 19,
     seed: 15345,
@@ -35,7 +35,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 3,
-    name: 'Orchard Twist',
+    name: 'Bubble Bay',
     rows: 19,
     cols: 19,
     seed: 1225,
@@ -46,7 +46,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 4,
-    name: 'River Bend',
+    name: 'Seahorse Stream',
     rows: 19,
     cols: 21,
     seed: 3645,
@@ -57,7 +57,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 5,
-    name: 'Forest Fork',
+    name: 'Turtle Lagoon',
     rows: 21,
     cols: 21,
     seed: 12757,
@@ -68,7 +68,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 6,
-    name: 'Canyon Crawl',
+    name: 'Crab Canyon',
     rows: 21,
     cols: 21,
     seed: 15005,
@@ -79,7 +79,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 7,
-    name: 'Sunset Switchback',
+    name: 'Sunset Reef',
     rows: 21,
     cols: 23,
     seed: 15105,
@@ -90,7 +90,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 8,
-    name: 'Tide Pools',
+    name: 'Tidal Treasure',
     rows: 23,
     cols: 23,
     seed: 5585,
@@ -101,7 +101,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 9,
-    name: 'Crystal Cave',
+    name: 'Crystal Cavern',
     rows: 23,
     cols: 23,
     seed: 11597,
@@ -112,7 +112,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 10,
-    name: 'Lava Labyrinth',
+    name: 'Volcano Vent',
     rows: 23,
     cols: 25,
     seed: 10593,
@@ -123,7 +123,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 11,
-    name: 'Storm Spiral',
+    name: 'Stormy Seas',
     rows: 25,
     cols: 25,
     seed: 4377,
@@ -134,7 +134,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 12,
-    name: 'Aurora Alley',
+    name: 'Aurora Abyss',
     rows: 25,
     cols: 25,
     seed: 3253,
@@ -145,7 +145,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 13,
-    name: 'Moon Maze',
+    name: 'Moonlit Marina',
     rows: 25,
     cols: 25,
     seed: 2225,
@@ -156,7 +156,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 14,
-    name: 'Dragon Den',
+    name: 'Dragonfish Den',
     rows: 25,
     cols: 25,
     seed: 5089,
@@ -167,7 +167,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 15,
-    name: 'Galaxy Gate',
+    name: 'Galaxy Grotto',
     rows: 25,
     cols: 25,
     seed: 761,
@@ -178,7 +178,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 16,
-    name: 'Champion Cup',
+    name: 'Reef Champion',
     rows: 25,
     cols: 25,
     seed: 4157,
