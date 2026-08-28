@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CharacterId, Pos } from '../types';
 import { getLevel, LEVELS } from '../maze/levels';
 import { generateMaze } from '../maze/generate';
-import { canMove, nextHintStep } from '../maze/pathfind';
+import { canMove } from '../maze/pathfind';
 import { generateCoins, posKey } from '../game/coins';
-import { playCoin, playHint, playMove, playWin } from '../sound';
+import { playCoin, playMove, playWin } from '../sound';
 import { MazeBoard } from './MazeBoard';
 import { MuteButton } from './MuteButton';
 import { WinModal } from './WinModal';
@@ -51,7 +51,6 @@ function GameRound({
   );
   const [player, setPlayer] = useState<Pos>(maze.start);
   const [won, setWon] = useState(false);
-  const [hintCell, setHintCell] = useState<Pos | null>(null);
   const [coins, setCoins] = useState(() => generateCoins(maze.grid, maze.start, maze.goal, levelId));
   const [roundCoins, setRoundCoins] = useState(0);
   const coinKeys = useMemo(() => new Set(coins.map(posKey)), [coins]);
@@ -60,7 +59,6 @@ function GameRound({
     (to: Pos) => {
       if (won) return;
       setPlayer(to);
-      setHintCell(null);
 
       const foundCoin = coinKeys.has(posKey(to));
       if (foundCoin) {
@@ -103,12 +101,6 @@ function GameRound({
     return () => window.removeEventListener('keydown', onKey);
   }, [player, maze.grid, moveTo, won]);
 
-  const showHint = () => {
-    if (won) return;
-    setHintCell(nextHintStep(maze.grid, player, maze.goal));
-    playHint(muted);
-  };
-
   return (
     <div className={`screen play-screen theme-${config.theme}`}>
       <header className="play-header">
@@ -117,11 +109,11 @@ function GameRound({
           <span className="play-level">Level {levelId}</span>
           <span className="play-name">{config.name}</span>
         </div>
-        <button type="button" className="hud-shop-button" onClick={onShop} aria-label="Open Aquarium Shop">
+        <div className="hud-coin-counter">
           <CoinBadge coins={coinTotal} compact />
-          <span>Shop</span>
-        </button>
-        <button type="button" className="btn btn-hint" onClick={showHint} disabled={won}>💡 Hint</button>
+          <span>Coins</span>
+        </div>
+        <button type="button" className="btn btn-hint" onClick={onShop} disabled={won} aria-label="Open Aquarium Shop">🛒 Shop</button>
       </header>
 
       <MazeBoard
@@ -131,7 +123,7 @@ function GameRound({
         player={player}
         coins={coins}
         characterId={characterId}
-        hintCell={hintCell}
+        hintCell={null}
         onMove={moveTo}
         won={won}
         theme={config.theme}

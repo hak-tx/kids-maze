@@ -45,14 +45,6 @@ export function HowTo({ onBack }: HowToProps) {
         </li>
         <li>
           <span className="howto-icon" aria-hidden="true">
-            💡
-          </span>
-          <div>
-            Stuck? Tap <strong>Hint</strong> — the next turn will glow.
-          </div>
-        </li>
-        <li>
-          <span className="howto-icon" aria-hidden="true">
             🧱
           </span>
           <div>

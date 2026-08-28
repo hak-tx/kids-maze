@@ -898,7 +898,7 @@ body {
 }
 
 .btn-shop,
-.hud-shop-button {
+.hud-coin-counter {
   border: 2px solid rgba(140, 242, 255, 0.55);
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(7, 74, 139, 0.92), rgba(4, 44, 100, 0.95));
@@ -967,14 +967,15 @@ body {
 .play-name { color: #a8edff; }
 .play-level { color: #fff7ae; }
 
-.hud-shop-button {
+.hud-coin-counter {
   min-height: 48px;
   padding: 3px 11px 3px 5px;
   display: inline-flex;
   gap: 6px;
   align-items: center;
+  cursor: default;
 }
-.hud-shop-button .coin-badge { background: transparent; border: 0; padding: 0; min-width: 0; }
+.hud-coin-counter .coin-badge { background: transparent; border: 0; padding: 0; min-width: 0; }
 
 .play-screen .maze-board {
   --wall: #0757b7;
@@ -1132,8 +1133,7 @@ body {
   .play-header { gap: 5px; padding: 5px; margin-bottom: 4px; }
   .play-title { min-width: 0; }
   .play-name { white-space: nowrap; max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
-  .hud-shop-button > span:last-child { display: none; }
-  .hud-shop-button { padding-right: 5px; }
+  .hud-coin-counter { padding-right: 8px; gap: 3px; font-size: .78rem; }
   .btn-hint { min-width: 72px; padding: 8px; font-size: .88rem; }
   .play-footer { padding: 4px 6px; gap: 5px; }
   .play-footer .btn-lg { width: auto; min-height: 48px; padding: 8px 14px; font-size: .92rem; }
