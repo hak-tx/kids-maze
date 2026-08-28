@@ -59,6 +59,14 @@ export function HowTo({ onBack }: HowToProps) {
             Paths are skinny — don&apos;t bump the patterned walls!
           </div>
         </li>
+        <li>
+          <span className="howto-icon" aria-hidden="true">🪙</span>
+          <div>Explore every turn to find <strong>random coins</strong>, even inside dead ends.</div>
+        </li>
+        <li>
+          <span className="howto-icon" aria-hidden="true">🐠</span>
+          <div>Spend saved coins in the <strong>Aquarium Shop</strong> and equip new maze swimmers.</div>
+        </li>
       </ol>
 
       <button type="button" className="btn btn-primary btn-lg" onClick={onBack}>

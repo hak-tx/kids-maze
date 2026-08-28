@@ -232,6 +232,12 @@ export function playHint(muted: boolean) {
   tone(980, 0.12, 'sine', 0.04, 0.08);
 }
 
+export function playCoin(muted: boolean) {
+  if (muted) return;
+  tone(880, 0.08, 'triangle', 0.055);
+  tone(1320, 0.13, 'sine', 0.045, 0.07);
+}
+
 export function playWin(muted: boolean) {
   if (muted) return;
   tone(523, 0.14, 'triangle', 0.06, 0);

@@ -762,3 +762,393 @@ body {
     display: none;
   }
 }
+
+/* Aquarium world */
+:root {
+  --ink: #06294f;
+  --ink-soft: #345e7d;
+  --primary: #087fdb;
+  --primary-dark: #05539b;
+  --secondary: #09a8a5;
+  --secondary-dark: #087b83;
+  --wall: #0755aa;
+  --wall-2: #043878;
+  --floor-a: #c9f4ff;
+  --floor-b: #aeeaff;
+}
+
+body {
+  background: #052c5b;
+}
+
+.app-shell {
+  max-width: none;
+  isolation: isolate;
+}
+
+.screen {
+  z-index: 2;
+}
+
+.aquarium-background {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 60, 130, 0.08), rgba(0, 20, 72, 0.38)),
+    url('/aquarium/aquarium-background.png') center / cover no-repeat;
+  z-index: 0;
+}
+
+.aquarium-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(98, 225, 255, 0.06) 0 34%, rgba(0, 26, 78, 0.18) 78%, rgba(0, 18, 57, 0.36) 100%);
+}
+
+.water-rays {
+  position: absolute;
+  inset: -10% -20% 25%;
+  background: repeating-linear-gradient(102deg, transparent 0 8%, rgba(173, 243, 255, 0.1) 10% 12%, transparent 15% 23%);
+  animation: water-shimmer 11s ease-in-out infinite alternate;
+  transform-origin: top center;
+}
+
+.bubble-field {
+  position: absolute;
+  inset: 0;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -40px;
+  border: 1.5px solid rgba(220, 250, 255, 0.75);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.85) 0 12%, rgba(113, 224, 255, 0.1) 36%, rgba(255, 255, 255, 0.08) 70%);
+  box-shadow: inset -2px -2px 5px rgba(3, 80, 145, 0.25);
+  animation: bubble-rise linear infinite;
+}
+
+.aquarium-character {
+  display: inline-block;
+  flex: 0 0 auto;
+  background-image: url('/aquarium/character-sprites-grid.png');
+  background-repeat: no-repeat;
+  background-size: 700% 100%;
+  background-color: transparent;
+  filter: drop-shadow(0 3px 4px rgba(0, 19, 59, 0.35));
+  animation: fin-bob 1.8s ease-in-out infinite;
+}
+
+.aquarium-character.celebrating {
+  animation: celebrate-swim 0.65s ease-in-out infinite;
+}
+
+.aquarium-swimmer {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.75;
+  animation: swim-across 28s linear infinite;
+}
+.aquarium-swimmer .aquarium-character { display: block; }
+.swimmer-a { top: 13%; animation-duration: 24s; animation-delay: -9s; }
+.swimmer-b { top: 35%; animation: swim-back 34s linear infinite; animation-delay: -3s; }
+.swimmer-b .aquarium-character { transform: scaleX(-1); }
+.swimmer-c { top: 68%; animation-duration: 39s; animation-delay: -28s; }
+.swimmer-d { top: 78%; animation: swim-back 42s linear infinite; animation-delay: -15s; }
+.swimmer-d .aquarium-character { transform: scaleX(-1); }
+.swimmer-e { top: 8%; animation-duration: 47s; animation-delay: -33s; opacity: 0.6; }
+.swimmer-f { top: 53%; animation-duration: 29s; animation-delay: -20s; }
+.swimmer-g { top: 73%; animation: swim-back 54s linear infinite; animation-delay: -40s; opacity: 0.58; }
+.swimmer-g .aquarium-character { transform: scaleX(-1); }
+
+.eyebrow {
+  display: block;
+  color: #6ff3ff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0, 23, 64, 0.8);
+}
+
+.home-screen {
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0, 24, 66, 0.7);
+}
+
+.home-screen::before {
+  content: '';
+  position: absolute;
+  inset: 7% max(4%, calc(50% - 360px));
+  border-radius: 44px;
+  background: radial-gradient(ellipse at center, rgba(2, 83, 147, 0.72), rgba(0, 35, 91, 0.4) 72%, transparent);
+  backdrop-filter: blur(2px);
+  z-index: -1;
+}
+
+.home-top {
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-shop,
+.hud-shop-button {
+  border: 2px solid rgba(140, 242, 255, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(7, 74, 139, 0.92), rgba(4, 44, 100, 0.95));
+  color: #fff;
+  box-shadow: 0 5px 16px rgba(0, 20, 64, 0.3);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.btn-shop {
+  min-height: 52px;
+  padding: 6px 18px 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-logo {
+  filter: drop-shadow(0 12px 22px rgba(0, 25, 70, 0.52));
+}
+.home-logo::before {
+  background: conic-gradient(from 120deg, #f8ce32, #28d7ef, #1683de, #ff8758, #f8ce32);
+}
+.home-title {
+  background: linear-gradient(180deg, #fffbd2 0%, #ffd75f 48%, #ff9f1f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 4px 0 #074381);
+}
+.home-tagline { color: #e7fbff; }
+
+.coin-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 86px;
+  padding: 5px 11px 5px 6px;
+  border-radius: 999px;
+  background: rgba(0, 27, 77, 0.78);
+  border: 2px solid rgba(255, 218, 78, 0.72);
+  color: #fff7ad;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.coin-badge.compact { min-width: 58px; padding: 3px 8px 3px 4px; }
+.coin-badge img { width: 30px; height: 30px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
+.coin-badge.compact img { width: 24px; height: 24px; }
+
+.play-screen {
+  color: #fff;
+  padding: 12px clamp(8px, 2vw, 24px) 8px;
+}
+
+.play-header,
+.play-footer {
+  width: min(100%, 1060px);
+  align-self: center;
+  border: 1px solid rgba(142, 237, 255, 0.45);
+  background: linear-gradient(180deg, rgba(4, 54, 112, 0.9), rgba(3, 35, 82, 0.92));
+  box-shadow: 0 8px 22px rgba(0, 17, 55, 0.34);
+  backdrop-filter: blur(10px);
+}
+.play-header { border-radius: 22px; padding: 7px 9px; }
+.play-footer { border-radius: 18px; padding: 7px 10px; }
+.play-name { color: #a8edff; }
+.play-level { color: #fff7ae; }
+
+.hud-shop-button {
+  min-height: 48px;
+  padding: 3px 11px 3px 5px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.hud-shop-button .coin-badge { background: transparent; border: 0; padding: 0; min-width: 0; }
+
+.play-screen .maze-board {
+  --wall: #0757b7;
+  --wall-2: #033b84;
+  --floor-a: #d8f8ff;
+  --floor-b: #bceeff;
+  border: clamp(4px, 0.8vw, 9px) solid #064da4;
+  border-radius: 18px;
+  box-shadow: 0 0 0 3px rgba(111, 228, 255, 0.8), 0 16px 38px rgba(0, 14, 55, 0.55);
+}
+.play-screen .maze-cell.wall {
+  background:
+    radial-gradient(circle at 24% 24%, rgba(112, 220, 255, 0.55) 0 1px, transparent 1.6px),
+    linear-gradient(180deg, rgba(61, 166, 233, 0.48), transparent 44%),
+    repeating-linear-gradient(90deg, var(--wall) 0 7px, var(--wall-2) 7px 9px);
+  box-shadow: inset 0 -2px 0 rgba(0, 24, 73, 0.36);
+}
+.play-screen .maze-cell.floor-a,
+.play-screen .maze-cell.floor-b {
+  background-image: radial-gradient(circle at 32% 28%, rgba(255,255,255,.8), transparent 42%), linear-gradient(135deg, rgba(255,255,255,.2), transparent 60%);
+}
+
+.maze-coin {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+  animation: coin-float 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 2px rgba(0, 58, 107, 0.45));
+}
+
+.round-coin-count {
+  color: #dffaff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+.round-coin-count strong { color: #ffe873; font-size: 1.1rem; }
+
+.screen-header,
+.howto-list li,
+.level-card {
+  backdrop-filter: blur(12px);
+}
+.screen-header {
+  color: #fff;
+  width: min(100%, 900px);
+  align-self: center;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(3, 42, 93, 0.82);
+}
+.level-grid,
+.howto-list { width: min(100%, 900px); align-self: center; }
+.howto-list li,
+.level-card { background: linear-gradient(180deg, rgba(244, 253, 255, 0.96), rgba(208, 244, 255, 0.93)); }
+
+.shop-screen {
+  color: #fff;
+  overflow-y: auto;
+  padding: clamp(12px, 3vw, 28px);
+}
+.shop-header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(137, 236, 255, 0.5);
+  border-radius: 22px;
+  background: rgba(2, 36, 84, 0.92);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 9px 28px rgba(0, 14, 56, 0.35);
+}
+.shop-header h2 { margin: 1px 0 0; font-size: clamp(1.25rem, 3vw, 2rem); }
+.shop-intro { margin: 16px auto; width: min(760px, 100%); text-align: center; color: #d6f8ff; font-weight: 700; text-shadow: 0 2px 4px #00245c; }
+.character-grid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  padding-bottom: 28px;
+}
+.character-card {
+  position: relative;
+  min-height: 360px;
+  padding: 16px;
+  border: 2px solid rgba(105, 224, 255, 0.45);
+  border-radius: 25px;
+  background: linear-gradient(165deg, rgba(10, 78, 143, 0.94), rgba(2, 34, 82, 0.97));
+  box-shadow: 0 12px 28px rgba(0, 18, 58, 0.38), inset 0 1px 0 rgba(255,255,255,.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.character-card.equipped { border-color: #ffe166; box-shadow: 0 0 0 3px rgba(255, 218, 72, 0.25), 0 12px 28px rgba(0, 18, 58, 0.4); }
+.character-card.legendary { background: linear-gradient(165deg, rgba(68, 43, 147, 0.95), rgba(21, 21, 85, 0.98)); }
+.legend-tag { position: absolute; top: 12px; right: 12px; border-radius: 999px; padding: 4px 9px; background: #ffe066; color: #3d286d; font-size: 0.68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.character-art { height: 142px; display: grid; place-items: center; }
+.character-card h3 { margin: 4px 0; font-size: 1.28rem; color: #fff6a6; }
+.character-card p { margin: 4px 0 10px; min-height: 44px; color: #caeffb; font-size: 0.9rem; }
+.character-price { min-height: 40px; display: grid; place-items: center; margin-bottom: 10px; }
+.shop-action { width: 100%; min-height: 48px; padding: 8px 12px; margin-top: auto; font-size: .92rem; }
+.equipped-button { background: #ffe066; color: #07346d; opacity: 1 !important; }
+
+.modal { background: linear-gradient(180deg, #ecfdff 0%, #c7f3ff 100%); border-color: #ffe066; }
+.win-coins { position: relative; margin: -8px 0 16px; color: #0756a3; font-weight: 800; }
+
+@keyframes bubble-rise {
+  from { transform: translate3d(0, 0, 0) scale(.75); opacity: 0; }
+  12% { opacity: .8; }
+  to { transform: translate3d(20px, -115vh, 0) scale(1.15); opacity: 0; }
+}
+@keyframes water-shimmer {
+  from { transform: skewX(-4deg) scaleX(.95); opacity: .65; }
+  to { transform: skewX(5deg) scaleX(1.08); opacity: 1; }
+}
+@keyframes swim-across {
+  from { transform: translateX(-15vw); }
+  to { transform: translateX(115vw); }
+}
+@keyframes swim-back {
+  from { transform: translateX(115vw); }
+  to { transform: translateX(-15vw); }
+}
+@keyframes fin-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -4px; }
+}
+@keyframes celebrate-swim {
+  0%, 100% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.12); }
+}
+@keyframes coin-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10%) rotate(3deg); }
+}
+
+@media (max-width: 680px) {
+  .screen { padding: 8px; }
+  .home-screen { gap: 15px; padding-top: 72px; }
+  .home-logo { width: 92px; height: 92px; }
+  .home-top { top: 8px; left: 8px; right: 8px; }
+  .btn-shop { padding-right: 10px; }
+  .btn-shop > span:last-child { display: none; }
+  .play-screen { padding: 5px 4px; }
+  .play-header { gap: 5px; padding: 5px; margin-bottom: 4px; }
+  .play-title { min-width: 0; }
+  .play-name { white-space: nowrap; max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
+  .hud-shop-button > span:last-child { display: none; }
+  .hud-shop-button { padding-right: 5px; }
+  .btn-hint { min-width: 72px; padding: 8px; font-size: .88rem; }
+  .play-footer { padding: 4px 6px; gap: 5px; }
+  .play-footer .btn-lg { width: auto; min-height: 48px; padding: 8px 14px; font-size: .92rem; }
+  .round-coin-count { font-size: .72rem; flex: 1; }
+  .character-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .character-card { min-height: 310px; padding: 10px 7px; border-radius: 19px; }
+  .character-art { height: 118px; }
+  .character-card h3 { font-size: 1rem; }
+  .character-card p { font-size: .75rem; min-height: 48px; }
+  .shop-header { gap: 7px; }
+  .shop-header .coin-badge { min-width: 68px; }
+  .shop-header h2 { font-size: 1.05rem; }
+  .shop-header .eyebrow { font-size: .6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aquarium-swimmer, .bubble, .water-rays, .maze-coin { animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
+}

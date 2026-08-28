@@ -1,4 +1,5 @@
 import { Character } from './Character';
+import type { CharacterId } from '../types';
 
 interface WinModalProps {
   levelId: number;
@@ -7,6 +8,8 @@ interface WinModalProps {
   onNext: () => void;
   onReplay: () => void;
   onHome: () => void;
+  characterId: CharacterId;
+  coinsCollected: number;
 }
 
 export function WinModal({
@@ -16,6 +19,8 @@ export function WinModal({
   onNext,
   onReplay,
   onHome,
+  characterId,
+  coinsCollected,
 }: WinModalProps) {
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="win-title">
@@ -27,12 +32,13 @@ export function WinModal({
         </div>
         <div className="win-burst" aria-hidden="true" />
         <div className="win-hero" aria-hidden="true">
-          <Character size={72} celebrating />
+          <Character id={characterId} size={92} celebrating />
         </div>
         <h2 id="win-title">{hasNext ? 'You did it!' : 'Champion!'}</h2>
         <p className="win-sub">
           Level {levelId}: {levelName}
         </p>
+        <p className="win-coins">🪙 You found <strong>{coinsCollected}</strong> coin{coinsCollected === 1 ? '' : 's'}!</p>
         <div className="win-actions">
           {hasNext ? (
             <button type="button" className="btn btn-primary btn-xl" onClick={onNext} autoFocus>

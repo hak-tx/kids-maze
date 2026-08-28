@@ -40,7 +40,22 @@ export interface LevelConfig {
   loopCount: number;
 }
 
-export type Screen = 'home' | 'levels' | 'howto' | 'play';
+export type CharacterId =
+  | 'goldfish'
+  | 'neon-guppy'
+  | 'rainbow-angelfish'
+  | 'seahorse'
+  | 'sea-turtle'
+  | 'jellyfish'
+  | 'big-daddy-octopus';
+
+export interface Economy {
+  coins: number;
+  owned: CharacterId[];
+  equipped: CharacterId;
+}
+
+export type Screen = 'home' | 'levels' | 'howto' | 'play' | 'shop';
 
 export interface Progress {
   unlocked: number;

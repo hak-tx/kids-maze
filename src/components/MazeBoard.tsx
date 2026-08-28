@@ -6,8 +6,9 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import type { Cell, MazeTheme, Pos } from '../types';
+import type { Cell, CharacterId, MazeTheme, Pos } from '../types';
 import { canMove } from '../maze/pathfind';
+import { posKey } from '../game/coins';
 import { Character } from './Character';
 import { GoalPortal, StartFlag } from './Markers';
 
@@ -16,6 +17,8 @@ interface MazeBoardProps {
   start: Pos;
   goal: Pos;
   player: Pos;
+  coins: Pos[];
+  characterId: CharacterId;
   hintCell: Pos | null;
   onMove: (to: Pos) => void;
   won: boolean;
@@ -27,6 +30,8 @@ export function MazeBoard({
   start,
   goal,
   player,
+  coins,
+  characterId,
   hintCell,
   onMove,
   won,
@@ -40,8 +45,7 @@ export function MazeBoard({
   const rows = grid.length;
   const cols = grid[0]?.length ?? 0;
 
-  // Fit maze into available space. Late 25×25 boards still stay readable
-  // on an iPad Mini (min 24px) without overflowing the play area.
+  // Fit every board into the available viewport, including 25x25 phone layouts.
   useEffect(() => {
     const el = boardRef.current;
     if (!el) return;
@@ -52,7 +56,7 @@ export function MazeBoard({
       const availH = parent.clientHeight - 8;
       const byW = Math.floor(availW / cols);
       const byH = Math.floor(availH / rows);
-      const size = Math.max(24, Math.min(52, byW, byH));
+      const size = Math.max(11, Math.min(52, byW, byH));
       setCellPx(size);
     };
     fit();
@@ -134,8 +138,9 @@ export function MazeBoard({
     dragging.current = false;
   };
 
-  const charSize = useMemo(() => Math.max(18, cellPx * 0.78), [cellPx]);
-  const markSize = useMemo(() => Math.max(14, cellPx * 0.7), [cellPx]);
+  const charSize = useMemo(() => Math.max(10, cellPx * 0.9), [cellPx]);
+  const markSize = useMemo(() => Math.max(9, cellPx * 0.72), [cellPx]);
+  const coinKeys = useMemo(() => new Set(coins.map(posKey)), [coins]);
 
   return (
     <div className="maze-board-wrap">
@@ -163,6 +168,7 @@ export function MazeBoard({
             const isStart = r === start.r && c === start.c;
             const isGoal = r === goal.r && c === goal.c;
             const isPlayer = r === player.r && c === player.c;
+            const isCoin = coinKeys.has(posKey({ r, c }));
             const isHint =
               hintCell && r === hintCell.r && c === hintCell.c && !isPlayer;
             const floorTone = (r + c) % 2 === 0 ? 'floor-a' : 'floor-b';
@@ -174,17 +180,26 @@ export function MazeBoard({
                   isWall ? 'wall' : floorTone,
                   isStart && !isPlayer ? 'start-cell' : '',
                   isGoal ? 'goal-cell' : '',
+                  isCoin ? 'coin-cell' : '',
                   isHint ? 'hint-pulse' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
                 style={{ width: cellPx, height: cellPx }}
+                data-cell={isWall ? 'wall' : 'floor'}
+                data-row={r}
+                data-col={c}
+                data-player={isPlayer || undefined}
+                data-coin={isCoin || undefined}
               >
                 {isStart && !isPlayer && !isGoal && <StartFlag size={markSize} />}
                 {isGoal && <GoalPortal size={markSize} />}
+                {isCoin && !isPlayer && (
+                  <img className="maze-coin" src="/aquarium/coin.png" alt="Coin" />
+                )}
                 {isPlayer && (
                   <div className={`player-wrap${won ? ' won' : ''}`}>
-                    <Character size={charSize} celebrating={won} />
+                    <Character id={characterId} size={charSize} celebrating={won} />
                   </div>
                 )}
               </div>
