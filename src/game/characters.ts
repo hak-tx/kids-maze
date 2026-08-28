@@ -7,6 +7,8 @@ export interface AquariumCharacter {
   spriteIndex: number;
   spriteLeft: number;
   spriteWidth: number;
+  /** Number of walkable maze steps from which this swimmer can pull in a coin. */
+  magnetRadius: number;
   description: string;
 }
 
@@ -24,6 +26,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 0,
     spriteLeft: 10,
     spriteWidth: 390,
+    magnetRadius: 0,
     description: 'Bright, brave, and ready to explore.',
   },
   {
@@ -33,6 +36,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 1,
     spriteLeft: 400,
     spriteWidth: 410,
+    magnetRadius: 1,
     description: 'A tiny speedster with electric colors.',
   },
   {
@@ -42,6 +46,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 2,
     spriteLeft: 820,
     spriteWidth: 365,
+    magnetRadius: 2,
     description: 'Graceful fins in every color of the reef.',
   },
   {
@@ -51,6 +56,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 3,
     spriteLeft: 1190,
     spriteWidth: 346,
+    magnetRadius: 3,
     description: 'A curious coral-garden adventurer.',
   },
   {
@@ -60,6 +66,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 4,
     spriteLeft: 0,
     spriteWidth: 450,
+    magnetRadius: 4,
     description: 'Cool, calm, and always keeps swimming.',
   },
   {
@@ -69,6 +76,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 5,
     spriteLeft: 450,
     spriteWidth: 380,
+    magnetRadius: 5,
     description: 'A glowing deep-sea maze dancer.',
   },
   {
@@ -78,6 +86,7 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
     spriteIndex: 6,
     spriteLeft: 835,
     spriteWidth: 575,
+    magnetRadius: 6,
     description: 'The legendary eight-armed maze master.',
   },
 ];

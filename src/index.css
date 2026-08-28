@@ -1085,6 +1085,23 @@ body {
 .character-art { height: 142px; display: grid; place-items: center; }
 .character-card h3 { margin: 4px 0; font-size: 1.28rem; color: #fff6a6; }
 .character-card p { margin: 4px 0 10px; min-height: 44px; color: #caeffb; font-size: 0.9rem; }
+.magnet-power {
+  width: 100%;
+  min-height: 44px;
+  margin: 0 0 10px;
+  padding: 6px 9px;
+  border: 1px solid rgba(136, 236, 255, 0.38);
+  border-radius: 12px;
+  background: rgba(0, 19, 60, 0.4);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 6px;
+  align-items: center;
+  text-align: left;
+}
+.magnet-power > span { grid-row: 1 / span 2; font-size: 1.25rem; }
+.magnet-power strong { color: #fff6a6; font-size: 0.78rem; line-height: 1.1; }
+.magnet-power small { color: #bceeff; font-size: 0.7rem; font-weight: 800; line-height: 1.1; }
 .character-price { min-height: 40px; display: grid; place-items: center; margin-bottom: 10px; }
 .shop-action { width: 100%; min-height: 48px; padding: 8px 12px; margin-top: auto; font-size: .92rem; }
 .equipped-button { background: #ffe066; color: #07346d; opacity: 1 !important; }
@@ -1143,6 +1160,9 @@ body {
   .character-art { height: 118px; }
   .character-card h3 { font-size: 1rem; }
   .character-card p { font-size: .75rem; min-height: 48px; }
+  .magnet-power { padding: 5px 6px; }
+  .magnet-power strong { font-size: .68rem; }
+  .magnet-power small { font-size: .62rem; }
   .shop-header { gap: 7px; }
   .shop-header .coin-badge { min-width: 68px; }
   .shop-header h2 { font-size: 1.05rem; }

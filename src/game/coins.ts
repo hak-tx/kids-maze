@@ -57,4 +57,45 @@ export function generateCoins(
   return [...chosen, ...remaining.slice(0, Math.max(0, count - chosen.length))];
 }
 
+/**
+ * Coins reached by a swimmer's magnet after moving to `from`.
+ * Distance follows open maze corridors so magnets never pull through walls.
+ */
+export function magnetizedCoins(
+  grid: Cell[][],
+  from: Pos,
+  coins: Pos[],
+  radius: number,
+) {
+  const coinKeys = new Set(coins.map(posKey));
+  const reachedCoinKeys = new Set<string>();
+  const visited = new Set([posKey(from)]);
+  const queue: Array<{ pos: Pos; distance: number }> = [
+    { pos: from, distance: 0 },
+  ];
+  const directions: Array<[number, number]> = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const currentKey = posKey(current.pos);
+    if (coinKeys.has(currentKey)) reachedCoinKeys.add(currentKey);
+    if (current.distance >= radius) continue;
+
+    for (const [dr, dc] of directions) {
+      const next = { r: current.pos.r + dr, c: current.pos.c + dc };
+      const nextKey = posKey(next);
+      if (grid[next.r]?.[next.c] !== 0 || visited.has(nextKey)) continue;
+      visited.add(nextKey);
+      queue.push({ pos: next, distance: current.distance + 1 });
+    }
+  }
+
+  return coins.filter((coin) => reachedCoinKeys.has(posKey(coin)));
+}
+
 export { posKey };

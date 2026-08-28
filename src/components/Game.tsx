@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CharacterId, Pos } from '../types';
 import { getLevel, LEVELS } from '../maze/levels';
 import { generateMaze } from '../maze/generate';
 import { canMove } from '../maze/pathfind';
-import { generateCoins, posKey } from '../game/coins';
+import { generateCoins, magnetizedCoins, posKey } from '../game/coins';
+import { getCharacter } from '../game/characters';
 import { playCoin, playMove, playWin } from '../sound';
 import { MazeBoard } from './MazeBoard';
 import { MuteButton } from './MuteButton';
@@ -52,19 +53,23 @@ function GameRound({
   const [player, setPlayer] = useState<Pos>(maze.start);
   const [won, setWon] = useState(false);
   const [coins, setCoins] = useState(() => generateCoins(maze.grid, maze.start, maze.goal, levelId));
+  const coinsRef = useRef(coins);
   const [roundCoins, setRoundCoins] = useState(0);
-  const coinKeys = useMemo(() => new Set(coins.map(posKey)), [coins]);
+  const magnetRadius = getCharacter(characterId).magnetRadius;
 
   const moveTo = useCallback(
     (to: Pos) => {
       if (won) return;
       setPlayer(to);
 
-      const foundCoin = coinKeys.has(posKey(to));
-      if (foundCoin) {
-        setCoins((current) => current.filter((coin) => posKey(coin) !== posKey(to)));
-        setRoundCoins((count) => count + 1);
-        onCollectCoin(1);
+      const collectedCoins = magnetizedCoins(maze.grid, to, coinsRef.current, magnetRadius);
+      if (collectedCoins.length > 0) {
+        const collectedKeys = new Set(collectedCoins.map(posKey));
+        const remainingCoins = coinsRef.current.filter((coin) => !collectedKeys.has(posKey(coin)));
+        coinsRef.current = remainingCoins;
+        setCoins(remainingCoins);
+        setRoundCoins((count) => count + collectedCoins.length);
+        onCollectCoin(collectedCoins.length);
         playCoin(muted);
       }
 
@@ -72,11 +77,11 @@ function GameRound({
         setWon(true);
         playWin(muted);
         onWin(levelId);
-      } else if (!foundCoin) {
+      } else if (collectedCoins.length === 0) {
         playMove(muted);
       }
     },
-    [won, coinKeys, maze.goal, onCollectCoin, muted, onWin, levelId],
+    [won, maze.grid, maze.goal, magnetRadius, onCollectCoin, muted, onWin, levelId],
   );
 
   useEffect(() => {

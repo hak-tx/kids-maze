@@ -40,6 +40,11 @@ export function CharacterShop({ economy, onBack, onBuy, onEquip }: CharacterShop
               <div className="character-art" aria-hidden="true"><Character id={character.id} size={128} /></div>
               <h3>{character.name}</h3>
               <p>{character.description}</p>
+              <div className="magnet-power" aria-label={`Magnet power ${character.magnetRadius + 1} of ${AQUARIUM_CHARACTERS.length}`}>
+                <span aria-hidden="true">🧲</span>
+                <strong>Magnet Power {character.magnetRadius + 1}</strong>
+                <small>{character.magnetRadius === 0 ? 'Touch coin' : `Reach ${character.magnetRadius} space${character.magnetRadius === 1 ? '' : 's'}`}</small>
+              </div>
               <div className="character-price">
                 {character.price === 0 ? <strong>Free starter</strong> : <CoinBadge coins={character.price} compact />}
               </div>

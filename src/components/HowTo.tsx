@@ -57,7 +57,7 @@ export function HowTo({ onBack }: HowToProps) {
         </li>
         <li>
           <span className="howto-icon" aria-hidden="true">🐠</span>
-          <div>Spend saved coins in the <strong>Aquarium Shop</strong> and equip new maze swimmers.</div>
+          <div>Spend saved coins in the <strong>Aquarium Shop</strong>. Each upgraded swimmer has stronger magnet power and can grab coins from farther away!</div>
         </li>
       </ol>
 
