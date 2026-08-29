@@ -845,6 +845,10 @@ body {
 .aquarium-character.celebrating {
   animation: celebrate-swim 0.65s ease-in-out infinite;
 }
+.aquarium-character.generated-character {
+  object-fit: contain;
+  background-image: none;
+}
 
 .aquarium-swimmer {
   position: absolute;
@@ -856,13 +860,19 @@ body {
 .swimmer-a { top: 13%; animation-duration: 24s; animation-delay: -9s; }
 .swimmer-b { top: 35%; animation: swim-back 34s linear infinite; animation-delay: -3s; }
 .swimmer-b .aquarium-character { transform: scaleX(-1); }
-.swimmer-c { top: 68%; animation-duration: 39s; animation-delay: -28s; }
+.swimmer-c { top: 68%; animation: swim-back 39s linear infinite; animation-delay: -28s; }
 .swimmer-d { top: 78%; animation: swim-back 42s linear infinite; animation-delay: -15s; }
 .swimmer-d .aquarium-character { transform: scaleX(-1); }
 .swimmer-e { top: 8%; animation-duration: 47s; animation-delay: -33s; opacity: 0.6; }
 .swimmer-f { top: 53%; animation-duration: 29s; animation-delay: -20s; }
-.swimmer-g { top: 73%; animation: swim-back 54s linear infinite; animation-delay: -40s; opacity: 0.58; }
-.swimmer-g .aquarium-character { transform: scaleX(-1); }
+.swimmer-g { top: 73%; animation-duration: 54s; animation-delay: -40s; opacity: 0.58; }
+.swimmer-h { top: 23%; animation-duration: 31s; animation-delay: -17s; opacity: .62; }
+.swimmer-i { top: 59%; animation: swim-back 38s linear infinite; animation-delay: -11s; opacity: .58; }
+.swimmer-i .aquarium-character { transform: scaleX(-1); }
+.swimmer-j { top: 87%; animation-duration: 48s; animation-delay: -35s; opacity: .5; }
+.swimmer-k { top: 45%; animation: swim-back 44s linear infinite; animation-delay: -26s; opacity: .48; }
+.swimmer-k .aquarium-character { transform: scaleX(-1); }
+.swimmer-l { top: 4%; animation-duration: 51s; animation-delay: -42s; opacity: .5; }
 
 .eyebrow {
   display: block;
@@ -1080,8 +1090,16 @@ body {
   text-align: center;
 }
 .character-card.equipped { border-color: #ffe166; box-shadow: 0 0 0 3px rgba(255, 218, 72, 0.25), 0 12px 28px rgba(0, 18, 58, 0.4); }
-.character-card.legendary { background: linear-gradient(165deg, rgba(68, 43, 147, 0.95), rgba(21, 21, 85, 0.98)); }
-.legend-tag { position: absolute; top: 12px; right: 12px; border-radius: 999px; padding: 4px 9px; background: #ffe066; color: #3d286d; font-size: 0.68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.character-card.rarity-epic { background: linear-gradient(165deg, rgba(28, 62, 139, 0.96), rgba(36, 20, 91, 0.98)); }
+.character-card.rarity-mythic { background: linear-gradient(165deg, rgba(72, 48, 151, 0.96), rgba(43, 18, 92, 0.98)); }
+.character-card.rarity-legendary { background: linear-gradient(165deg, rgba(68, 43, 147, 0.95), rgba(21, 21, 85, 0.98)); }
+.rarity-tag { position: absolute; top: 12px; right: 12px; border-radius: 999px; padding: 4px 9px; font-size: 0.65rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 2px 7px rgba(0, 15, 50, .28); }
+.rarity-tag-common { background: #d5f8ff; color: #07527b; }
+.rarity-tag-uncommon { background: #bff58b; color: #245b20; }
+.rarity-tag-rare { background: #7ce8ff; color: #075085; }
+.rarity-tag-epic { background: #c9a5ff; color: #45218b; }
+.rarity-tag-mythic { background: #ff9fe8; color: #741358; }
+.rarity-tag-legendary { background: #ffe066; color: #3d286d; }
 .character-art { height: 142px; display: grid; place-items: center; }
 .character-card h3 { margin: 4px 0; font-size: 1.28rem; color: #fff6a6; }
 .character-card p { margin: 4px 0 10px; min-height: 44px; color: #caeffb; font-size: 0.9rem; }

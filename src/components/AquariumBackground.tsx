@@ -9,6 +9,11 @@ const SWIMMERS: { id: CharacterId; className: string; size: number }[] = [
   { id: 'jellyfish', className: 'swimmer-e', size: 88 },
   { id: 'goldfish', className: 'swimmer-f', size: 68 },
   { id: 'big-daddy-octopus', className: 'swimmer-g', size: 128 },
+  { id: 'coral-clownfish', className: 'swimmer-h', size: 76 },
+  { id: 'pufferfish', className: 'swimmer-i', size: 74 },
+  { id: 'manta-ray', className: 'swimmer-j', size: 118 },
+  { id: 'hammerhead-shark', className: 'swimmer-k', size: 112 },
+  { id: 'narwhal', className: 'swimmer-l', size: 102 },
 ];
 
 export function AquariumBackground() {

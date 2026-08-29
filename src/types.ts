@@ -42,11 +42,16 @@ export interface LevelConfig {
 
 export type CharacterId =
   | 'goldfish'
+  | 'coral-clownfish'
   | 'neon-guppy'
+  | 'pufferfish'
   | 'rainbow-angelfish'
   | 'seahorse'
+  | 'manta-ray'
   | 'sea-turtle'
   | 'jellyfish'
+  | 'hammerhead-shark'
+  | 'narwhal'
   | 'big-daddy-octopus';
 
 export interface Economy {

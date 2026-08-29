@@ -35,8 +35,8 @@ export function CharacterShop({ economy, onBack, onBuy, onEquip }: CharacterShop
           const canBuy = economy.coins >= character.price;
 
           return (
-            <article key={character.id} className={`character-card${equipped ? ' equipped' : ''}${character.id === 'big-daddy-octopus' ? ' legendary' : ''}`}>
-              {character.id === 'big-daddy-octopus' && <span className="legend-tag">Legendary</span>}
+            <article key={character.id} className={`character-card rarity-${character.rarity}${equipped ? ' equipped' : ''}`}>
+              <span className={`rarity-tag rarity-tag-${character.rarity}`}>{character.rarity}</span>
               <div className="character-art" aria-hidden="true"><Character id={character.id} size={128} /></div>
               <h3>{character.name}</h3>
               <p>{character.description}</p>

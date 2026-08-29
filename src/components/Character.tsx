@@ -11,11 +11,26 @@ export function Character({
   celebrating?: boolean;
 }) {
   const character = getCharacter(id);
-  const row = Math.floor(character.spriteIndex / 4);
+  if (character.imageSrc) {
+    return (
+      <img
+        className={`aquarium-character generated-character${celebrating ? ' celebrating' : ''}`}
+        src={character.imageSrc}
+        alt={character.name}
+        width={size}
+        height={size}
+      />
+    );
+  }
+
+  const spriteIndex = character.spriteIndex!;
+  const spriteLeft = character.spriteLeft!;
+  const spriteWidth = character.spriteWidth!;
+  const row = Math.floor(spriteIndex / 4);
   const sheetWidth = 1536;
   const cropHeight = 512;
-  const backgroundWidth = (sheetWidth / character.spriteWidth) * 100;
-  const horizontalPosition = (character.spriteLeft / (sheetWidth - character.spriteWidth)) * 100;
+  const backgroundWidth = (sheetWidth / spriteWidth) * 100;
+  const horizontalPosition = (spriteLeft / (sheetWidth - spriteWidth)) * 100;
 
   return (
     <span
