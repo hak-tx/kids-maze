@@ -70,6 +70,7 @@ export default function App() {
           muted={muted}
           onToggleMute={toggleMuted}
           coinTotal={economy.coins}
+          ownedCharacters={economy.owned}
           characterId={economy.equipped}
           onCollectCoin={addCoins}
           onShop={() => setScreen('shop')}

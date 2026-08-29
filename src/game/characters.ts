@@ -156,3 +156,22 @@ export const AQUARIUM_CHARACTERS: AquariumCharacter[] = [
 export function getCharacter(id: CharacterId) {
   return AQUARIUM_CHARACTERS.find((character) => character.id === id)!;
 }
+
+/**
+ * Returns the strongest new swimmer the player can afford beyond the best
+ * character they already own. Players can skip straight to a better upgrade.
+ */
+export function getBestAffordableUpgrade(coins: number, owned: CharacterId[]) {
+  const ownedIds = new Set(owned);
+  const strongestOwnedPower = owned.reduce(
+    (power, id) => Math.max(power, getCharacter(id).magnetRadius),
+    0,
+  );
+
+  return AQUARIUM_CHARACTERS.findLast(
+    (character) =>
+      !ownedIds.has(character.id) &&
+      character.price <= coins &&
+      character.magnetRadius > strongestOwnedPower,
+  );
+}

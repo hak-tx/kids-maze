@@ -19,6 +19,7 @@ interface GameProps {
   muted: boolean;
   onToggleMute: () => void;
   coinTotal: number;
+  ownedCharacters: CharacterId[];
   characterId: CharacterId;
   onCollectCoin: (amount?: number) => void;
   onShop: () => void;
@@ -37,6 +38,7 @@ function GameRound({
   muted,
   onToggleMute,
   coinTotal,
+  ownedCharacters,
   characterId,
   onCollectCoin,
   onShop,
@@ -147,6 +149,9 @@ function GameRound({
           hasNext={levelId < LEVELS.length}
           characterId={characterId}
           coinsCollected={roundCoins}
+          coinTotal={coinTotal}
+          ownedCharacters={ownedCharacters}
+          onShop={onShop}
           onNext={() => onSelectLevel(levelId + 1)}
           onReplay={onRestart}
           onHome={onHome}

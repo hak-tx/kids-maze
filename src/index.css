@@ -1126,6 +1126,51 @@ body {
 
 .modal { background: linear-gradient(180deg, #ecfdff 0%, #c7f3ff 100%); border-color: #ffe066; }
 .win-coins { position: relative; margin: -8px 0 16px; color: #0756a3; font-weight: 800; }
+.win-upgrade-offer {
+  position: relative;
+  width: 100%;
+  margin: -4px 0 16px;
+  padding: 10px;
+  border: 2px solid rgba(8, 127, 219, .35);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,.88), rgba(158,232,255,.72));
+  box-shadow: 0 8px 18px rgba(0, 57, 111, .14);
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 5px 8px;
+  align-items: center;
+  text-align: left;
+}
+.win-upgrade-offer.rarity-epic,
+.win-upgrade-offer.rarity-mythic,
+.win-upgrade-offer.rarity-legendary {
+  border-color: rgba(112, 68, 190, .48);
+  background: linear-gradient(145deg, rgba(246,239,255,.94), rgba(194,164,255,.72));
+}
+.win-upgrade-art { grid-row: 1 / span 2; display: grid; place-items: center; }
+.win-upgrade-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; color: #07346d; }
+.win-upgrade-copy .rarity-tag { position: static; align-self: flex-start; padding: 2px 7px; font-size: .56rem; }
+.win-upgrade-copy strong { font-size: .96rem; color: #074f91; }
+.win-upgrade-copy span:not(.rarity-tag) { font-size: .78rem; font-weight: 800; }
+.win-upgrade-copy small { font-size: .7rem; font-weight: 700; color: #345e7d; }
+.btn-upgrade-offer {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 40px;
+  padding: 7px 12px;
+  background: linear-gradient(180deg, #27d9bd, #08a6a6);
+  color: white;
+  box-shadow: 0 5px 0 #087b83;
+}
+.btn-upgrade-offer:hover { transform: translateY(-1px); }
+
+@media (max-width: 480px) {
+  .modal-backdrop { padding: 8px; }
+  .win-modal { max-height: calc(100dvh - 16px); overflow-y: auto; padding: 18px 14px; }
+  .win-upgrade-offer { grid-template-columns: 64px 1fr; padding: 8px; margin-bottom: 12px; }
+  .win-upgrade-art .aquarium-character { width: 62px !important; height: 62px !important; }
+  .win-actions { gap: 8px; }
+}
 
 @keyframes bubble-rise {
   from { transform: translate3d(0, 0, 0) scale(.75); opacity: 0; }

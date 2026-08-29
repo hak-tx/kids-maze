@@ -1,5 +1,6 @@
 import { Character } from './Character';
 import type { CharacterId } from '../types';
+import { getBestAffordableUpgrade } from '../game/characters';
 
 interface WinModalProps {
   levelId: number;
@@ -10,6 +11,9 @@ interface WinModalProps {
   onHome: () => void;
   characterId: CharacterId;
   coinsCollected: number;
+  coinTotal: number;
+  ownedCharacters: CharacterId[];
+  onShop: () => void;
 }
 
 export function WinModal({
@@ -21,7 +25,12 @@ export function WinModal({
   onHome,
   characterId,
   coinsCollected,
+  coinTotal,
+  ownedCharacters,
+  onShop,
 }: WinModalProps) {
+  const upgrade = getBestAffordableUpgrade(coinTotal, ownedCharacters);
+
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="win-title">
       <div className="modal win-modal">
@@ -39,6 +48,22 @@ export function WinModal({
           Level {levelId}: {levelName}
         </p>
         <p className="win-coins">🪙 You found <strong>{coinsCollected}</strong> coin{coinsCollected === 1 ? '' : 's'}!</p>
+        {upgrade ? (
+          <section className={`win-upgrade-offer rarity-${upgrade.rarity}`} aria-label="Character upgrade available">
+            <div className="win-upgrade-art" aria-hidden="true">
+              <Character id={upgrade.id} size={72} celebrating />
+            </div>
+            <div className="win-upgrade-copy">
+              <span className={`rarity-tag rarity-tag-${upgrade.rarity}`}>{upgrade.rarity}</span>
+              <strong>New upgrade available!</strong>
+              <span>{upgrade.name} · Magnet Power {upgrade.magnetRadius + 1}</span>
+              <small>Yours for {upgrade.price} coins · You have {coinTotal}</small>
+            </div>
+            <button type="button" className="btn btn-upgrade-offer" onClick={onShop}>
+              View in Shop
+            </button>
+          </section>
+        ) : null}
         <div className="win-actions">
           {hasNext ? (
             <button type="button" className="btn btn-primary btn-xl" onClick={onNext} autoFocus>
