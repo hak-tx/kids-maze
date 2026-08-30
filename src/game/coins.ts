@@ -98,4 +98,11 @@ export function magnetizedCoins(
   return coins.filter((coin) => reachedCoinKeys.has(posKey(coin)));
 }
 
+/** Same-cell and adjacent pickups snap in faster; distant magnet pulls take longer. */
+export function coinSuckDurationMs(from: Pos, to: Pos) {
+  const distance = Math.abs(from.r - to.r) + Math.abs(from.c - to.c);
+  if (distance <= 1) return 250;
+  return Math.min(450, 280 + distance * 16);
+}
+
 export { posKey };

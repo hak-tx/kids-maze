@@ -4,9 +4,10 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import type { Cell, CharacterId, MazeTheme, Pos } from '../types';
+import type { Cell, CharacterId, FlyingCoin, MazeTheme, Pos } from '../types';
 import { canMove } from '../maze/pathfind';
 import { posKey } from '../game/coins';
 import { Character } from './Character';
@@ -18,6 +19,8 @@ interface MazeBoardProps {
   goal: Pos;
   player: Pos;
   coins: Pos[];
+  flyingCoins: FlyingCoin[];
+  onFlyingCoinDone: (id: string) => void;
   characterId: CharacterId;
   hintCell: Pos | null;
   onMove: (to: Pos) => void;
@@ -31,6 +34,8 @@ export function MazeBoard({
   goal,
   player,
   coins,
+  flyingCoins,
+  onFlyingCoinDone,
   characterId,
   hintCell,
   onMove,
@@ -206,7 +211,60 @@ export function MazeBoard({
             );
           }),
         )}
+        {flyingCoins.length > 0 && (
+          <div className="maze-coin-fx" aria-hidden="true">
+            {flyingCoins.map((fx) => (
+              <FlyingCoinSprite
+                key={fx.id}
+                fx={fx}
+                cellPx={cellPx}
+                onDone={onFlyingCoinDone}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+function flyingCoinStyle(fx: FlyingCoin, cellPx: number) {
+  return {
+    width: cellPx,
+    height: cellPx,
+    left: fx.from.c * cellPx,
+    top: fx.from.r * cellPx,
+    '--dx': `${(fx.to.c - fx.from.c) * cellPx}px`,
+    '--dy': `${(fx.to.r - fx.from.r) * cellPx}px`,
+    '--suck-ms': `${fx.durationMs}ms`,
+    '--suck-delay': `${fx.delayMs}ms`,
+  } as CSSProperties;
+}
+
+function FlyingCoinSprite({
+  fx,
+  cellPx,
+  onDone,
+}: {
+  fx: FlyingCoin;
+  cellPx: number;
+  onDone: (id: string) => void;
+}) {
+  useEffect(() => {
+    const timer = window.setTimeout(() => onDone(fx.id), fx.delayMs + fx.durationMs + 80);
+    return () => window.clearTimeout(timer);
+  }, [fx.delayMs, fx.durationMs, fx.id, onDone]);
+
+  return (
+    <span
+      className="flying-coin"
+      data-flying-coin={fx.id}
+      style={flyingCoinStyle(fx, cellPx)}
+      onAnimationEnd={(event) => {
+        if (event.target === event.currentTarget) onDone(fx.id);
+      }}
+    >
+      <img src="/aquarium/coin.png" alt="" />
+    </span>
   );
 }
