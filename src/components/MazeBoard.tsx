@@ -54,11 +54,10 @@ export function MazeBoard({
   useEffect(() => {
     const el = boardRef.current;
     if (!el) return;
+    const host = el.closest('.maze-board-wrap') ?? el.parentElement ?? el;
     const fit = () => {
-      const parent = el.parentElement;
-      if (!parent) return;
-      const availW = parent.clientWidth - 8;
-      const availH = parent.clientHeight - 8;
+      const availW = host.clientWidth - 8;
+      const availH = host.clientHeight - 8;
       const byW = Math.floor(availW / cols);
       const byH = Math.floor(availH / rows);
       const size = Math.max(11, Math.min(52, byW, byH));
@@ -66,7 +65,7 @@ export function MazeBoard({
     };
     fit();
     const ro = new ResizeObserver(fit);
-    ro.observe(el.parentElement ?? el);
+    ro.observe(host);
     return () => ro.disconnect();
   }, [rows, cols]);
 
@@ -150,67 +149,72 @@ export function MazeBoard({
   return (
     <div className="maze-board-wrap">
       <div
-        ref={boardRef}
-        className={`maze-board theme-${theme}`}
-        data-theme={theme}
-        style={{
-          width: cols * cellPx,
-          height: rows * cellPx,
-          gridTemplateColumns: `repeat(${cols}, ${cellPx}px)`,
-          gridTemplateRows: `repeat(${rows}, ${cellPx}px)`,
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={endDrag}
-        role="application"
-        aria-label="Maze board"
+        className="maze-board-stack"
+        style={{ width: cols * cellPx, height: rows * cellPx }}
       >
-        {grid.map((row, r) =>
-          row.map((cell, c) => {
-            const isWall = cell === 1;
-            const isStart = r === start.r && c === start.c;
-            const isGoal = r === goal.r && c === goal.c;
-            const isPlayer = r === player.r && c === player.c;
-            const isCoin = coinKeys.has(posKey({ r, c }));
-            const isHint =
-              hintCell && r === hintCell.r && c === hintCell.c && !isPlayer;
-            const floorTone = (r + c) % 2 === 0 ? 'floor-a' : 'floor-b';
-            return (
-              <div
-                key={`${r}-${c}`}
-                className={[
-                  'maze-cell',
-                  isWall ? 'wall' : floorTone,
-                  isStart && !isPlayer ? 'start-cell' : '',
-                  isGoal ? 'goal-cell' : '',
-                  isCoin ? 'coin-cell' : '',
-                  isHint ? 'hint-pulse' : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                style={{ width: cellPx, height: cellPx }}
-                data-cell={isWall ? 'wall' : 'floor'}
-                data-row={r}
-                data-col={c}
-                data-player={isPlayer || undefined}
-                data-coin={isCoin || undefined}
-              >
-                {isStart && !isPlayer && !isGoal && <StartFlag size={markSize} />}
-                {isGoal && <GoalPortal size={markSize} />}
-                {isCoin && !isPlayer && (
-                  <img className="maze-coin" src="/aquarium/coin.png" alt="Coin" />
-                )}
-                {isPlayer && (
-                  <div className={`player-wrap${won ? ' won' : ''}`}>
-                    <Character id={characterId} size={charSize} celebrating={won} />
-                  </div>
-                )}
-              </div>
-            );
-          }),
-        )}
+        <div
+          ref={boardRef}
+          className={`maze-board theme-${theme}`}
+          data-theme={theme}
+          style={{
+            width: cols * cellPx,
+            height: rows * cellPx,
+            gridTemplateColumns: `repeat(${cols}, ${cellPx}px)`,
+            gridTemplateRows: `repeat(${rows}, ${cellPx}px)`,
+          }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onPointerLeave={endDrag}
+          role="application"
+          aria-label="Maze board"
+        >
+          {grid.map((row, r) =>
+            row.map((cell, c) => {
+              const isWall = cell === 1;
+              const isStart = r === start.r && c === start.c;
+              const isGoal = r === goal.r && c === goal.c;
+              const isPlayer = r === player.r && c === player.c;
+              const isCoin = coinKeys.has(posKey({ r, c }));
+              const isHint =
+                hintCell && r === hintCell.r && c === hintCell.c && !isPlayer;
+              const floorTone = (r + c) % 2 === 0 ? 'floor-a' : 'floor-b';
+              return (
+                <div
+                  key={`${r}-${c}`}
+                  className={[
+                    'maze-cell',
+                    isWall ? 'wall' : floorTone,
+                    isStart && !isPlayer ? 'start-cell' : '',
+                    isGoal ? 'goal-cell' : '',
+                    isCoin ? 'coin-cell' : '',
+                    isHint ? 'hint-pulse' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  style={{ width: cellPx, height: cellPx }}
+                  data-cell={isWall ? 'wall' : 'floor'}
+                  data-row={r}
+                  data-col={c}
+                  data-player={isPlayer || undefined}
+                  data-coin={isCoin || undefined}
+                >
+                  {isStart && !isPlayer && !isGoal && <StartFlag size={markSize} />}
+                  {isGoal && <GoalPortal size={markSize} />}
+                  {isCoin && !isPlayer && (
+                    <img className="maze-coin" src="/aquarium/coin.png" alt="Coin" />
+                  )}
+                  {isPlayer && (
+                    <div className={`player-wrap${won ? ' won' : ''}`}>
+                      <Character id={characterId} size={charSize} celebrating={won} />
+                    </div>
+                  )}
+                </div>
+              );
+            }),
+          )}
+        </div>
         {flyingCoins.length > 0 && (
           <div className="maze-coin-fx" aria-hidden="true">
             {flyingCoins.map((fx) => (
@@ -228,19 +232,6 @@ export function MazeBoard({
   );
 }
 
-function flyingCoinStyle(fx: FlyingCoin, cellPx: number) {
-  return {
-    width: cellPx,
-    height: cellPx,
-    left: fx.from.c * cellPx,
-    top: fx.from.r * cellPx,
-    '--dx': `${(fx.to.c - fx.from.c) * cellPx}px`,
-    '--dy': `${(fx.to.r - fx.from.r) * cellPx}px`,
-    '--suck-ms': `${fx.durationMs}ms`,
-    '--suck-delay': `${fx.delayMs}ms`,
-  } as CSSProperties;
-}
-
 function FlyingCoinSprite({
   fx,
   cellPx,
@@ -250,18 +241,50 @@ function FlyingCoinSprite({
   cellPx: number;
   onDone: (id: string) => void;
 }) {
+  const [sucking, setSucking] = useState(false);
+  const dx = (fx.to.c - fx.from.c) * cellPx;
+  const dy = (fx.to.r - fx.from.r) * cellPx;
+
   useEffect(() => {
-    const timer = window.setTimeout(() => onDone(fx.id), fx.delayMs + fx.durationMs + 80);
-    return () => window.clearTimeout(timer);
+    let frameA = 0;
+    let frameB = 0;
+    frameA = window.requestAnimationFrame(() => {
+      frameB = window.requestAnimationFrame(() => setSucking(true));
+    });
+    const timer = window.setTimeout(
+      () => onDone(fx.id),
+      fx.delayMs + fx.durationMs + 80,
+    );
+    return () => {
+      window.cancelAnimationFrame(frameA);
+      window.cancelAnimationFrame(frameB);
+      window.clearTimeout(timer);
+    };
   }, [fx.delayMs, fx.durationMs, fx.id, onDone]);
+
+  const style: CSSProperties = {
+    width: cellPx,
+    height: cellPx,
+    left: fx.from.c * cellPx,
+    top: fx.from.r * cellPx,
+    transform: sucking
+      ? `translate3d(${dx}px, ${dy}px, 0) scale(0)`
+      : 'translate3d(0, 0, 0) scale(1.06)',
+    transition: sucking
+      ? `transform ${fx.durationMs}ms cubic-bezier(0.62, 0.02, 0.92, 0.28) ${fx.delayMs}ms`
+      : 'none',
+  };
 
   return (
     <span
       className="flying-coin"
       data-flying-coin={fx.id}
-      style={flyingCoinStyle(fx, cellPx)}
-      onAnimationEnd={(event) => {
-        if (event.target === event.currentTarget) onDone(fx.id);
+      data-sucking={sucking || undefined}
+      style={style}
+      onTransitionEnd={(event) => {
+        if (event.target === event.currentTarget && event.propertyName === 'transform') {
+          onDone(fx.id);
+        }
       }}
     >
       <img src="/aquarium/coin.png" alt="" />
