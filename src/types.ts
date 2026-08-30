@@ -5,6 +5,15 @@ export interface Pos {
   c: number;
 }
 
+/** Coin visually flying toward the fish after a collect. */
+export interface FlyingCoin {
+  id: string;
+  from: Pos;
+  to: Pos;
+  durationMs: number;
+  delayMs: number;
+}
+
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
 /** Visual theme for walls, floors, and accents. */
@@ -40,7 +49,27 @@ export interface LevelConfig {
   loopCount: number;
 }
 
-export type Screen = 'home' | 'levels' | 'howto' | 'play';
+export type CharacterId =
+  | 'goldfish'
+  | 'coral-clownfish'
+  | 'neon-guppy'
+  | 'pufferfish'
+  | 'rainbow-angelfish'
+  | 'seahorse'
+  | 'manta-ray'
+  | 'sea-turtle'
+  | 'jellyfish'
+  | 'hammerhead-shark'
+  | 'narwhal'
+  | 'big-daddy-octopus';
+
+export interface Economy {
+  coins: number;
+  owned: CharacterId[];
+  equipped: CharacterId;
+}
+
+export type Screen = 'home' | 'levels' | 'howto' | 'play' | 'shop';
 
 export interface Progress {
   unlocked: number;

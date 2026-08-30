@@ -45,19 +45,19 @@ export function HowTo({ onBack }: HowToProps) {
         </li>
         <li>
           <span className="howto-icon" aria-hidden="true">
-            💡
-          </span>
-          <div>
-            Stuck? Tap <strong>Hint</strong> — the next turn will glow.
-          </div>
-        </li>
-        <li>
-          <span className="howto-icon" aria-hidden="true">
             🧱
           </span>
           <div>
             Paths are skinny — don&apos;t bump the patterned walls!
           </div>
+        </li>
+        <li>
+          <span className="howto-icon" aria-hidden="true">🪙</span>
+          <div>Explore every turn to find <strong>random coins</strong>, even inside dead ends.</div>
+        </li>
+        <li>
+          <span className="howto-icon" aria-hidden="true">🐠</span>
+          <div>Spend saved coins in the <strong>Aquarium Shop</strong>. Collect swimmers from Common to Legendary—each upgrade has stronger magnet power!</div>
         </li>
       </ol>
 

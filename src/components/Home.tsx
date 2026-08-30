@@ -2,6 +2,8 @@ import { Character } from './Character';
 import { GoalPortal, MazeMark } from './Markers';
 import { MuteButton } from './MuteButton';
 import { playTap } from '../sound';
+import type { CharacterId } from '../types';
+import { CoinBadge } from './CoinBadge';
 
 interface HomeProps {
   onPlay: () => void;
@@ -10,6 +12,9 @@ interface HomeProps {
   unlocked: number;
   muted: boolean;
   onToggleMute: () => void;
+  coins: number;
+  characterId: CharacterId;
+  onShop: () => void;
 }
 
 export function Home({
@@ -19,35 +24,32 @@ export function Home({
   unlocked,
   muted,
   onToggleMute,
+  coins,
+  characterId,
+  onShop,
 }: HomeProps) {
   return (
     <div className="screen home-screen">
-      <div className="sky-decor" aria-hidden="true">
-        <span className="cloud cloud-a" />
-        <span className="cloud cloud-b" />
-        <span className="cloud cloud-c" />
-        <span className="float-star s1">✦</span>
-        <span className="float-star s2">★</span>
-        <span className="float-star s3">✦</span>
-        <span className="hill hill-left" />
-        <span className="hill hill-right" />
-      </div>
-
       <div className="home-top">
         <MuteButton muted={muted} onToggle={onToggleMute} />
+        <button type="button" className="btn btn-shop" onClick={onShop}>
+          <CoinBadge coins={coins} compact />
+          <span>Aquarium Shop</span>
+        </button>
       </div>
 
       <div className="home-hero">
         <div className="home-logo" aria-hidden="true">
           <MazeMark size={88} />
           <div className="home-buddy">
-            <Character size={52} />
+            <Character id={characterId} size={64} />
           </div>
         </div>
-        <h1 className="home-title">Kids Maze</h1>
+        <span className="eyebrow">Underwater Adventure</span>
+        <h1 className="home-title">Aquarium Maze</h1>
         <p className="home-tagline">
           <GoalPortal size={28} />
-          <span>Wiggle to the glowing star!</span>
+          <span>Swim, explore, and collect treasure!</span>
         </p>
       </div>
 
