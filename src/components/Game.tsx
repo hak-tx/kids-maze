@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { CharacterId, Pos } from '../types';
+import type { CharacterId, FlyingCoin, Pos } from '../types';
 import { getLevel, LEVELS } from '../maze/levels';
 import { generateMaze } from '../maze/generate';
 import { canMove } from '../maze/pathfind';
-import { generateCoins, magnetizedCoins, posKey } from '../game/coins';
+import { coinSuckDurationMs, generateCoins, magnetizedCoins, posKey } from '../game/coins';
 import { getCharacter } from '../game/characters';
 import { playCoin, playMove, playWin } from '../sound';
 import { MazeBoard } from './MazeBoard';
@@ -56,8 +56,14 @@ function GameRound({
   const [won, setWon] = useState(false);
   const [coins, setCoins] = useState(() => generateCoins(maze.grid, maze.start, maze.goal, levelId));
   const coinsRef = useRef(coins);
+  const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
+  const flyingIdRef = useRef(0);
   const [roundCoins, setRoundCoins] = useState(0);
   const magnetRadius = getCharacter(characterId).magnetRadius;
+
+  const finishFlyingCoin = useCallback((id: string) => {
+    setFlyingCoins((current) => current.filter((coin) => coin.id !== id));
+  }, []);
 
   const moveTo = useCallback(
     (to: Pos) => {
@@ -70,6 +76,17 @@ function GameRound({
         const remainingCoins = coinsRef.current.filter((coin) => !collectedKeys.has(posKey(coin)));
         coinsRef.current = remainingCoins;
         setCoins(remainingCoins);
+        const incoming = collectedCoins.map((coin, index) => {
+          flyingIdRef.current += 1;
+          return {
+            id: `fly-${flyingIdRef.current}`,
+            from: coin,
+            to,
+            durationMs: coinSuckDurationMs(coin, to),
+            delayMs: Math.min(index * 18, 72),
+          };
+        });
+        setFlyingCoins((current) => [...current, ...incoming]);
         setRoundCoins((count) => count + collectedCoins.length);
         onCollectCoin(collectedCoins.length);
         playCoin(muted);
@@ -129,6 +146,8 @@ function GameRound({
         goal={maze.goal}
         player={player}
         coins={coins}
+        flyingCoins={flyingCoins}
+        onFlyingCoinDone={finishFlyingCoin}
         characterId={characterId}
         hintCell={null}
         onMove={moveTo}

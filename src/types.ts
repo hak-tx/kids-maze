@@ -5,6 +5,15 @@ export interface Pos {
   c: number;
 }
 
+/** Coin visually flying toward the fish after a collect. */
+export interface FlyingCoin {
+  id: string;
+  from: Pos;
+  to: Pos;
+  durationMs: number;
+  delayMs: number;
+}
+
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
 /** Visual theme for walls, floors, and accents. */
