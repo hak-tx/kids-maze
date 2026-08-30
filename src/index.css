@@ -445,13 +445,19 @@ body {
   padding: 4px;
   touch-action: none;
 }
+.maze-board-stack {
+  --board-border: 5px;
+  position: relative;
+  flex: 0 0 auto;
+}
+
 .maze-board {
   display: grid;
   position: relative;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 12px 28px rgba(26, 35, 64, 0.32);
-  border: 5px solid var(--wall);
+  border: var(--board-border) solid var(--wall);
   touch-action: none;
   background: var(--wall);
 }
@@ -988,12 +994,15 @@ body {
 }
 .hud-coin-counter .coin-badge { background: transparent; border: 0; padding: 0; min-width: 0; }
 
+.play-screen .maze-board-stack {
+  --board-border: clamp(4px, 0.8vw, 9px);
+}
 .play-screen .maze-board {
   --wall: #0757b7;
   --wall-2: #033b84;
   --floor-a: #d8f8ff;
   --floor-b: #bceeff;
-  border: clamp(4px, 0.8vw, 9px) solid #064da4;
+  border: var(--board-border) solid #064da4;
   border-radius: 18px;
   box-shadow: 0 0 0 3px rgba(111, 228, 255, 0.8), 0 16px 38px rgba(0, 14, 55, 0.55);
 }
@@ -1022,6 +1031,7 @@ body {
 .maze-coin-fx {
   position: absolute;
   inset: 0;
+  margin: var(--board-border);
   pointer-events: none;
   z-index: 6;
 }
@@ -1032,23 +1042,13 @@ body {
   place-items: center;
   pointer-events: none;
   will-change: transform;
-  animation: coin-suck var(--suck-ms) cubic-bezier(0.62, 0.02, 0.92, 0.28) var(--suck-delay) both;
 }
 
 .flying-coin img {
   width: 78%;
   height: 78%;
   object-fit: contain;
-  filter: drop-shadow(0 0 7px rgba(255, 214, 74, 0.9)) drop-shadow(0 2px 2px rgba(0, 58, 107, 0.4));
-}
-
-@keyframes coin-suck {
-  from {
-    transform: translate3d(0, 0, 0) scale(1.06);
-  }
-  to {
-    transform: translate3d(var(--dx), var(--dy), 0) scale(0);
-  }
+  filter: drop-shadow(0 0 8px rgba(255, 214, 74, 0.95)) drop-shadow(0 2px 2px rgba(0, 58, 107, 0.4));
 }
 
 .round-coin-count {
@@ -1267,5 +1267,5 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .aquarium-swimmer, .bubble, .water-rays, .maze-coin { animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
-  .flying-coin { animation-duration: 1ms !important; animation-delay: 0ms !important; }
+  .flying-coin { transition-duration: 1ms !important; transition-delay: 0ms !important; }
 }
