@@ -38,6 +38,7 @@ body,
 #root {
   margin: 0;
   height: 100%;
+  height: 100dvh;
   width: 100%;
   overflow: hidden;
   touch-action: manipulation;
@@ -55,11 +56,13 @@ body {
 
 .app-shell {
   height: 100%;
+  height: 100dvh;
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0)
     env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
   position: relative;
@@ -435,10 +438,42 @@ body {
 .play-screen {
   padding-bottom: 8px;
   overflow: hidden;
+  /* Fill the shell so the maze host can claim leftover height on tablets. */
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+/* Portrait (and wide boards): explode the right rail so bonus sits above the maze. */
+.play-rail-right {
+  display: contents;
+}
+.play-header.play-rail-left {
+  order: 1;
+}
+.play-bonus-row {
+  order: 2;
+}
+.play-maze-stage {
+  order: 3;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.play-footer {
+  order: 4;
+}
+.play-maze-stage .maze-board-wrap {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
 }
 .maze-board-wrap {
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -961,6 +996,7 @@ body {
 .play-screen {
   color: #fff;
   padding: 12px clamp(8px, 2vw, 24px) 8px;
+  min-height: 0;
 }
 
 .play-header,
@@ -975,6 +1011,40 @@ body {
 .play-header { border-radius: 22px; padding: 7px 9px; }
 .play-footer { border-radius: 18px; padding: 7px 10px; }
 
+.play-bonus-row {
+  align-self: center;
+  width: min(100%, 1060px);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.play-bonus-row .bonus-timer {
+  margin: 0;
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+.btn-pause {
+  min-height: 52px;
+  min-width: 132px;
+  padding: 10px 20px;
+  font-size: 1.12rem;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #7ad7ff 0%, #087fdb 62%, #05539b 100%);
+  color: #fff;
+  border: 2px solid rgba(180, 240, 255, 0.75);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+.btn-pause:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.btn-pause[aria-pressed='true'] {
+  background: linear-gradient(180deg, #69db7c 0%, #37b24d 60%, #2b8a3e 100%);
+  border-color: rgba(185, 255, 198, 0.8);
+}
 .bonus-timer {
   align-self: center;
   width: min(100%, 1060px);
@@ -1009,6 +1079,186 @@ body {
   border: 1px solid rgba(142, 237, 255, 0.32);
   box-shadow: none;
   opacity: 0.88;
+}
+.bonus-timer-paused {
+  animation: none;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.45), 0 5px 16px rgba(0, 20, 64, 0.28);
+}
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(2, 28, 68, 0.42);
+  backdrop-filter: blur(4px);
+}
+.pause-card {
+  width: min(360px, 100%);
+  padding: 26px 22px 22px;
+  border-radius: 28px;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(8, 86, 160, 0.96), rgba(3, 35, 82, 0.96));
+  border: 3px solid rgba(142, 237, 255, 0.62);
+  box-shadow: 0 16px 40px rgba(0, 17, 55, 0.42);
+}
+.pause-card p {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 0 rgba(0, 20, 50, 0.25);
+}
+.pause-sub {
+  margin: 8px 0 20px !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #c5f0ff;
+  text-shadow: none;
+}
+.pause-card .btn-xl {
+  max-width: 280px;
+}
+
+/*
+ * Landscape + square/tall mazes: park HUD on left/right rails so the maze
+ * can claim the tall middle column. Wide boards keep the portrait stack.
+ */
+@media (orientation: landscape) {
+  .play-screen.maze-fit-sides {
+    display: grid;
+    grid-template-columns: minmax(132px, 20vw) minmax(0, 1fr) minmax(148px, 22vw);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: 'rail-left maze rail-right';
+    gap: 6px;
+    padding: 6px clamp(4px, 1vw, 12px);
+    align-items: stretch;
+  }
+  .play-screen.maze-fit-sides .play-rail-left {
+    grid-area: rail-left;
+    order: unset;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 8px;
+    border-radius: 20px;
+  }
+  .play-screen.maze-fit-sides .play-title {
+    flex: 0 0 auto;
+  }
+  .play-screen.maze-fit-sides .play-name {
+    max-width: 100%;
+    white-space: normal;
+    text-overflow: unset;
+    overflow: visible;
+  }
+  .play-screen.maze-fit-sides .hud-coin-counter {
+    justify-content: center;
+    width: 100%;
+  }
+  .play-screen.maze-fit-sides .btn-hint {
+    width: 100%;
+    min-width: 0;
+  }
+  .play-screen.maze-fit-sides .play-rail-right {
+    grid-area: rail-right;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 10px;
+    min-height: 0;
+    height: 100%;
+    padding: 10px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(142, 237, 255, 0.45);
+    background: linear-gradient(180deg, rgba(4, 54, 112, 0.9), rgba(3, 35, 82, 0.92));
+    box-shadow: 0 8px 22px rgba(0, 17, 55, 0.34);
+    backdrop-filter: blur(10px);
+  }
+  .play-screen.maze-fit-sides .play-rail-right .play-footer {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    padding: 0;
+  }
+  .play-screen.maze-fit-sides .play-bonus-row {
+    order: unset;
+    width: 100%;
+    margin: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .play-screen.maze-fit-sides .play-bonus-row .bonus-timer,
+  .play-screen.maze-fit-sides .bonus-timer {
+    width: 100%;
+    margin: 0;
+    min-height: 52px;
+  }
+  .play-screen.maze-fit-sides .btn-pause {
+    width: 100%;
+    min-width: 0;
+  }
+  .play-screen.maze-fit-sides .play-footer {
+    order: unset;
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 8px;
+    border-radius: 20px;
+    margin-top: auto;
+  }
+  .play-screen.maze-fit-sides .play-footer .btn-lg {
+    width: 100%;
+    max-width: none;
+  }
+  .play-screen.maze-fit-sides .round-coin-count {
+    text-align: center;
+    flex: 0 0 auto;
+  }
+  .play-screen.maze-fit-sides .play-maze-stage {
+    grid-area: maze;
+    order: unset;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .play-screen.maze-fit-sides {
+    grid-template-columns: minmax(96px, 15vw) minmax(0, 1fr) minmax(112px, 17vw);
+    gap: 4px;
+    padding: 4px;
+  }
+  .play-screen.maze-fit-sides .play-rail-left,
+  .play-screen.maze-fit-sides .play-footer {
+    padding: 6px 5px;
+    gap: 6px;
+  }
+  .play-screen.maze-fit-sides .btn-pause,
+  .play-screen.maze-fit-sides .play-bonus-row .bonus-timer {
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+  .play-screen.maze-fit-sides .play-footer .btn-lg {
+    min-height: 44px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
 }
 
 @keyframes bonus-pulse {
@@ -1303,8 +1553,13 @@ body {
   .play-screen { padding: 5px 4px; }
   .play-header { gap: 5px; padding: 5px; margin-bottom: 4px; }
   .play-title { min-width: 0; }
+  .play-bonus-row { gap: 6px; margin-bottom: 6px; }
   .bonus-timer { min-height: 42px; font-size: 1.05rem; margin-bottom: 6px; padding: 6px 14px; }
+  .play-bonus-row .bonus-timer { margin-bottom: 0; }
   .bonus-timer-over { min-height: 34px; font-size: 0.85rem; }
+  .btn-pause { min-height: 48px; min-width: 108px; padding: 8px 12px; font-size: 0.98rem; }
+  .pause-card p { font-size: 1.65rem; }
+  .pause-sub { font-size: 0.95rem !important; }
   .play-name { white-space: nowrap; max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
   .hud-coin-counter { padding-right: 8px; gap: 3px; font-size: .78rem; }
   .btn-hint { min-width: 72px; padding: 8px; font-size: .88rem; }

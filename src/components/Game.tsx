@@ -66,18 +66,33 @@ function GameRound({
   const [bonusRemainingMs, setBonusRemainingMs] = useState(bonusMs);
   const [bonusActive, setBonusActive] = useState(true);
   const [earnedBonus, setEarnedBonus] = useState(false);
+  const [paused, setPaused] = useState(false);
   const bonusActiveRef = useRef(true);
   const wonRef = useRef(false);
+  const pausedRef = useRef(false);
   const magnetRadius = getCharacter(characterId).magnetRadius;
 
+  const setPausedState = useCallback((next: boolean) => {
+    pausedRef.current = next;
+    setPaused(next);
+  }, []);
+
+  const togglePaused = useCallback(() => {
+    if (wonRef.current) return;
+    setPausedState(!pausedRef.current);
+  }, [setPausedState]);
+
   useEffect(() => {
-    let pausedAt: number | null = document.hidden ? performance.now() : null;
+    let pausedAt: number | null =
+      document.hidden || pausedRef.current ? performance.now() : null;
     let pausedMs = 0;
     const started = performance.now();
 
-    const onVisibility = () => {
-      if (document.hidden) {
-        pausedAt = performance.now();
+    const timerFrozen = () => document.hidden || pausedRef.current || wonRef.current;
+
+    const syncFreeze = () => {
+      if (timerFrozen()) {
+        if (pausedAt == null) pausedAt = performance.now();
         return;
       }
       if (pausedAt != null) {
@@ -85,11 +100,16 @@ function GameRound({
         pausedAt = null;
       }
     };
+
+    const onVisibility = () => {
+      syncFreeze();
+    };
     document.addEventListener('visibilitychange', onVisibility);
 
     let frame = 0;
     const tick = (now: number) => {
-      if (!wonRef.current && !document.hidden) {
+      syncFreeze();
+      if (!wonRef.current && !document.hidden && !pausedRef.current) {
         const elapsed = now - started - pausedMs;
         const remaining = Math.max(0, bonusMs - elapsed);
         setBonusRemainingMs(remaining);
@@ -116,7 +136,7 @@ function GameRound({
 
   const moveTo = useCallback(
     (to: Pos) => {
-      if (won) return;
+      if (won || paused) return;
       setPlayer(to);
 
       const collectedCoins = magnetizedCoins(maze.grid, to, coinsRef.current, magnetRadius);
@@ -156,12 +176,12 @@ function GameRound({
         playMove(muted);
       }
     },
-    [won, maze.grid, maze.goal, magnetRadius, onCollectCoin, muted, onWin, levelId],
+    [won, paused, maze.grid, maze.goal, magnetRadius, onCollectCoin, muted, onWin, levelId],
   );
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (won) return;
+      if (won || paused) return;
       const map: Record<string, Pos> = {
         ArrowUp: { r: player.r - 1, c: player.c },
         ArrowDown: { r: player.r + 1, c: player.c },
@@ -179,11 +199,16 @@ function GameRound({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [player, maze.grid, moveTo, won]);
+  }, [player, maze.grid, moveTo, won, paused]);
+
+  // Wide boards keep a top/bottom HUD in landscape; square/tall boards use side rails.
+  const mazeCols = maze.grid[0]?.length ?? config.cols;
+  const mazeRows = maze.grid.length;
+  const mazeAspect = mazeCols > mazeRows ? 'maze-wide' : 'maze-fit-sides';
 
   return (
-    <div className={`screen play-screen theme-${config.theme}`}>
-      <header className="play-header">
+    <div className={`screen play-screen theme-${config.theme} ${mazeAspect}`}>
+      <header className="play-header play-rail-left">
         <button type="button" className="btn btn-ghost btn-icon" onClick={onHome} aria-label="Home">⌂</button>
         <div className="play-title">
           <span className="play-level">Level {levelId}</span>
@@ -196,28 +221,60 @@ function GameRound({
         <button type="button" className="btn btn-hint" onClick={onShop} disabled={won} aria-label="Open Aquarium Shop">🛒 Shop</button>
       </header>
 
-      {!won && <BonusTimer remainingMs={bonusRemainingMs} active={bonusActive} />}
+      <aside className="play-rail-right">
+        {!won && (
+          <div className="play-bonus-row">
+            <BonusTimer remainingMs={bonusRemainingMs} active={bonusActive} paused={paused} />
+            <button
+              type="button"
+              className="btn btn-pause"
+              onClick={togglePaused}
+              aria-pressed={paused}
+              aria-label={paused ? 'Resume bonus timer and movement' : 'Pause bonus timer and movement'}
+            >
+              {paused ? '▶ Resume' : '⏸ Pause'}
+            </button>
+          </div>
+        )}
+        <footer className="play-footer">
+          <MuteButton muted={muted} onToggle={onToggleMute} />
+          <span className="round-coin-count">Found this maze: <strong>{roundCoins}</strong></span>
+          <button type="button" className="btn btn-secondary btn-lg" onClick={onRestart}>Restart</button>
+        </footer>
+      </aside>
 
-      <MazeBoard
-        grid={maze.grid}
-        start={maze.start}
-        goal={maze.goal}
-        player={player}
-        coins={coins}
-        flyingCoins={flyingCoins}
-        onFlyingCoinDone={finishFlyingCoin}
-        characterId={characterId}
-        hintCell={null}
-        onMove={moveTo}
-        won={won}
-        theme={config.theme}
-      />
-
-      <footer className="play-footer">
-        <MuteButton muted={muted} onToggle={onToggleMute} />
-        <span className="round-coin-count">Found this maze: <strong>{roundCoins}</strong></span>
-        <button type="button" className="btn btn-secondary btn-lg" onClick={onRestart}>Restart</button>
-      </footer>
+      <div className="play-maze-stage">
+        <MazeBoard
+          grid={maze.grid}
+          start={maze.start}
+          goal={maze.goal}
+          player={player}
+          coins={coins}
+          flyingCoins={flyingCoins}
+          onFlyingCoinDone={finishFlyingCoin}
+          characterId={characterId}
+          hintCell={null}
+          onMove={moveTo}
+          won={won}
+          paused={paused}
+          theme={config.theme}
+        />
+        {paused && !won && (
+          <div className="pause-overlay" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+            <div className="pause-card">
+              <p id="pause-title">Paused</p>
+              <p className="pause-sub">Timer is frozen — tap to swim again</p>
+              <button
+                type="button"
+                className="btn btn-primary btn-xl"
+                onClick={() => setPausedState(false)}
+              >
+                ▶ Resume
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {won && (
         <WinModal

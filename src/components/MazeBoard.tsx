@@ -25,6 +25,7 @@ interface MazeBoardProps {
   hintCell: Pos | null;
   onMove: (to: Pos) => void;
   won: boolean;
+  paused?: boolean;
   theme: MazeTheme;
 }
 
@@ -40,6 +41,7 @@ export function MazeBoard({
   hintCell,
   onMove,
   won,
+  paused = false,
   theme,
 }: MazeBoardProps) {
   const boardRef = useRef<HTMLDivElement>(null);
@@ -50,18 +52,21 @@ export function MazeBoard({
   const rows = grid.length;
   const cols = grid[0]?.length ?? 0;
 
-  // Fit every board into the available viewport, including 25x25 phone layouts.
+  // Fit every board into the available play area (phones + tablets).
+  // No hard max cell size — tablets should use the leftover viewport.
   useEffect(() => {
     const el = boardRef.current;
     if (!el) return;
     const host = el.closest('.maze-board-wrap') ?? el.parentElement ?? el;
     const fit = () => {
-      const availW = host.clientWidth - 8;
-      const availH = host.clientHeight - 8;
+      const availW = Math.max(0, host.clientWidth - 8);
+      const availH = Math.max(0, host.clientHeight - 8);
+      // Skip transient 0-size layouts so we don't lock in a postage-stamp board.
+      if (availW < 32 || availH < 32) return;
       const byW = Math.floor(availW / cols);
       const byH = Math.floor(availH / rows);
-      const size = Math.max(11, Math.min(52, byW, byH));
-      setCellPx(size);
+      const size = Math.max(11, Math.min(byW, byH));
+      setCellPx((prev) => (prev === size ? prev : size));
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -84,19 +89,25 @@ export function MazeBoard({
     [cellPx, rows, cols],
   );
 
+  const locked = won || paused;
+
+  useEffect(() => {
+    if (paused) dragging.current = false;
+  }, [paused]);
+
   const tryStep = useCallback(
     (to: Pos, from: Pos) => {
-      if (won) return;
+      if (won || paused) return;
       if (canMove(grid, from, to)) {
         onMove(to);
         lastCell.current = to;
       }
     },
-    [grid, onMove, won],
+    [grid, onMove, won, paused],
   );
 
   const onPointerDown = (e: ReactPointerEvent) => {
-    if (won) return;
+    if (locked) return;
     e.preventDefault();
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     dragging.current = true;
@@ -108,7 +119,7 @@ export function MazeBoard({
   };
 
   const onPointerMove = (e: ReactPointerEvent) => {
-    if (!dragging.current || won) return;
+    if (!dragging.current || locked) return;
     const cell = cellFromPoint(e.clientX, e.clientY);
     if (!cell) return;
     const from = lastCell.current ?? player;
