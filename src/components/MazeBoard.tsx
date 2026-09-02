@@ -25,6 +25,7 @@ interface MazeBoardProps {
   hintCell: Pos | null;
   onMove: (to: Pos) => void;
   won: boolean;
+  paused?: boolean;
   theme: MazeTheme;
 }
 
@@ -40,6 +41,7 @@ export function MazeBoard({
   hintCell,
   onMove,
   won,
+  paused = false,
   theme,
 }: MazeBoardProps) {
   const boardRef = useRef<HTMLDivElement>(null);
@@ -84,19 +86,25 @@ export function MazeBoard({
     [cellPx, rows, cols],
   );
 
+  const locked = won || paused;
+
+  useEffect(() => {
+    if (paused) dragging.current = false;
+  }, [paused]);
+
   const tryStep = useCallback(
     (to: Pos, from: Pos) => {
-      if (won) return;
+      if (won || paused) return;
       if (canMove(grid, from, to)) {
         onMove(to);
         lastCell.current = to;
       }
     },
-    [grid, onMove, won],
+    [grid, onMove, won, paused],
   );
 
   const onPointerDown = (e: ReactPointerEvent) => {
-    if (won) return;
+    if (locked) return;
     e.preventDefault();
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     dragging.current = true;
@@ -108,7 +116,7 @@ export function MazeBoard({
   };
 
   const onPointerMove = (e: ReactPointerEvent) => {
-    if (!dragging.current || won) return;
+    if (!dragging.current || locked) return;
     const cell = cellFromPoint(e.clientX, e.clientY);
     if (!cell) return;
     const from = lastCell.current ?? player;

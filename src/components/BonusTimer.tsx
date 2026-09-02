@@ -1,6 +1,7 @@
 interface BonusTimerProps {
   remainingMs: number;
   active: boolean;
+  paused?: boolean;
 }
 
 function formatBonusClock(ms: number): string {
@@ -10,7 +11,7 @@ function formatBonusClock(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-export function BonusTimer({ remainingMs, active }: BonusTimerProps) {
+export function BonusTimer({ remainingMs, active, paused = false }: BonusTimerProps) {
   if (!active) {
     return (
       <div className="bonus-timer bonus-timer-over" role="status" aria-live="polite">
@@ -19,14 +20,18 @@ export function BonusTimer({ remainingMs, active }: BonusTimerProps) {
     );
   }
 
-  const low = remainingMs <= 10_000;
+  const low = remainingMs <= 10_000 && !paused;
   const clock = formatBonusClock(remainingMs);
 
   return (
     <div
-      className={`bonus-timer bonus-timer-active${low ? ' bonus-timer-low' : ''}`}
+      className={`bonus-timer bonus-timer-active${low ? ' bonus-timer-low' : ''}${paused ? ' bonus-timer-paused' : ''}`}
       role="timer"
-      aria-label={`Bonus time ${clock}. Finish in time for double coins.`}
+      aria-label={
+        paused
+          ? `Bonus time ${clock}, paused.`
+          : `Bonus time ${clock}. Finish in time for double coins.`
+      }
     >
       <span aria-hidden="true">⭐</span>
       <span>{clock}</span>
