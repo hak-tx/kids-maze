@@ -23,7 +23,7 @@ export function HowTo({ onBack }: HowToProps) {
           </span>
           <div>
             <strong>Start</strong> at the green flag. Race to the{' '}
-            <strong>glowing star portal</strong>!
+            <strong>glowing starfish</strong>!
           </div>
         </li>
         <li>
