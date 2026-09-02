@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CharacterId, FlyingCoin, Pos } from '../types';
-import { getLevel, LEVELS } from '../maze/levels';
+import { bonusSecondsForLevel, getLevel, LEVELS } from '../maze/levels';
 import { generateMaze } from '../maze/generate';
 import { canMove } from '../maze/pathfind';
 import { coinSuckDurationMs, generateCoins, magnetizedCoins, posKey } from '../game/coins';
@@ -10,6 +10,7 @@ import { MazeBoard } from './MazeBoard';
 import { MuteButton } from './MuteButton';
 import { WinModal } from './WinModal';
 import { CoinBadge } from './CoinBadge';
+import { BonusTimer } from './BonusTimer';
 
 interface GameProps {
   levelId: number;
@@ -49,9 +50,11 @@ function GameRound({
     () => generateMaze(config.rows, config.cols, config.seed, {
       widenPasses: config.widenPasses,
       loopCount: config.loopCount,
+      randomPick: config.randomPick,
     }),
     [config],
   );
+  const bonusMs = bonusSecondsForLevel(config) * 1000;
   const [player, setPlayer] = useState<Pos>(maze.start);
   const [won, setWon] = useState(false);
   const [coins, setCoins] = useState(() => generateCoins(maze.grid, maze.start, maze.goal, levelId));
@@ -59,7 +62,53 @@ function GameRound({
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
   const flyingIdRef = useRef(0);
   const [roundCoins, setRoundCoins] = useState(0);
+  const roundCoinsRef = useRef(0);
+  const [bonusRemainingMs, setBonusRemainingMs] = useState(bonusMs);
+  const [bonusActive, setBonusActive] = useState(true);
+  const [earnedBonus, setEarnedBonus] = useState(false);
+  const bonusActiveRef = useRef(true);
+  const wonRef = useRef(false);
   const magnetRadius = getCharacter(characterId).magnetRadius;
+
+  useEffect(() => {
+    let pausedAt: number | null = document.hidden ? performance.now() : null;
+    let pausedMs = 0;
+    const started = performance.now();
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        pausedAt = performance.now();
+        return;
+      }
+      if (pausedAt != null) {
+        pausedMs += performance.now() - pausedAt;
+        pausedAt = null;
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    let frame = 0;
+    const tick = (now: number) => {
+      if (!wonRef.current && !document.hidden) {
+        const elapsed = now - started - pausedMs;
+        const remaining = Math.max(0, bonusMs - elapsed);
+        setBonusRemainingMs(remaining);
+        if (remaining <= 0 && bonusActiveRef.current) {
+          bonusActiveRef.current = false;
+          setBonusActive(false);
+        }
+      }
+      if (!wonRef.current && bonusActiveRef.current) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    frame = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [bonusMs]);
 
   const finishFlyingCoin = useCallback((id: string) => {
     setFlyingCoins((current) => current.filter((coin) => coin.id !== id));
@@ -87,12 +136,19 @@ function GameRound({
           };
         });
         setFlyingCoins((current) => [...current, ...incoming]);
-        setRoundCoins((count) => count + collectedCoins.length);
+        roundCoinsRef.current += collectedCoins.length;
+        setRoundCoins(roundCoinsRef.current);
         onCollectCoin(collectedCoins.length);
         playCoin(muted);
       }
 
       if (to.r === maze.goal.r && to.c === maze.goal.c) {
+        const hitBonus = bonusActiveRef.current;
+        wonRef.current = true;
+        setEarnedBonus(hitBonus);
+        if (hitBonus && roundCoinsRef.current > 0) {
+          onCollectCoin(roundCoinsRef.current);
+        }
         setWon(true);
         playWin(muted);
         onWin(levelId);
@@ -140,6 +196,8 @@ function GameRound({
         <button type="button" className="btn btn-hint" onClick={onShop} disabled={won} aria-label="Open Aquarium Shop">🛒 Shop</button>
       </header>
 
+      {!won && <BonusTimer remainingMs={bonusRemainingMs} active={bonusActive} />}
+
       <MazeBoard
         grid={maze.grid}
         start={maze.start}
@@ -168,6 +226,7 @@ function GameRound({
           hasNext={levelId < LEVELS.length}
           characterId={characterId}
           coinsCollected={roundCoins}
+          bonusHit={earnedBonus}
           coinTotal={coinTotal}
           ownedCharacters={ownedCharacters}
           onShop={onShop}

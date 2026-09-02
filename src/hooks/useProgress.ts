@@ -14,11 +14,19 @@ function load(): Progress {
         typeof parsed.unlocked === 'number' &&
         Array.isArray(parsed.completed)
       ) {
+        const completed = parsed.completed.filter(
+          (n) => typeof n === 'number' && n >= 1 && n <= LEVELS.length,
+        );
+        const highestDone = completed.reduce((max, id) => Math.max(max, id), 0);
         return {
-          unlocked: Math.max(1, Math.min(parsed.unlocked, LEVELS.length)),
-          completed: parsed.completed.filter(
-            (n) => typeof n === 'number' && n >= 1 && n <= LEVELS.length,
+          unlocked: Math.max(
+            1,
+            Math.min(
+              Math.max(parsed.unlocked, highestDone > 0 ? highestDone + 1 : 1),
+              LEVELS.length,
+            ),
           ),
+          completed,
         };
       }
     }

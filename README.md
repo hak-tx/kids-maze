@@ -4,9 +4,10 @@ Colorful progressive maze game for kids (through ~age 7, with a real challenge f
 
 ## Features
 
-- **16 levels** — single-width, branchy growing-tree mazes (lots of dead ends and junctions)
+- **40 levels** — single-width, branchy growing-tree mazes (lots of dead ends and junctions)
 - Early boards start at **17×17** with ~20+ dead ends — not a guided corridor
-- Late boards grow to **25×25**, still readable on an iPad Mini
+- Late boards grow to **31×31** with wide/tall shapes, new ocean themes, and a **Legend** tier
+- Every maze has a ~40s **bonus clock** — finish in time to double that maze's coins (play continues if it runs out)
 - Seeded deterministic mazes that are always solvable
 - Distinct themed walls/floors, animated explorer, waving flag + star portal
 - Finger drag along the path **or** tap adjacent cells

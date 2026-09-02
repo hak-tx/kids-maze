@@ -7,7 +7,7 @@ export function coinCountForLevel(levelId: number) {
   return 9 + Math.floor((levelId - 1) / 2);
 }
 
-/** 200 coins across the current 16-level adventure. */
+/** Coins placed across one full adventure (all current levels, no bonus). */
 export const COINS_PER_FULL_ADVENTURE = LEVELS.reduce(
   (total, level) => total + coinCountForLevel(level.id),
   0,

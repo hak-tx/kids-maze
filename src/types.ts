@@ -14,7 +14,7 @@ export interface FlyingCoin {
   delayMs: number;
 }
 
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'legend';
 
 /** Visual theme for walls, floors, and accents. */
 export type MazeTheme =
@@ -33,7 +33,15 @@ export type MazeTheme =
   | 'moon'
   | 'dragon'
   | 'galaxy'
-  | 'champion';
+  | 'champion'
+  | 'pearl'
+  | 'shipwreck'
+  | 'bioluminescent'
+  | 'iceberg'
+  | 'mangrove'
+  | 'whirlpool'
+  | 'treasure'
+  | 'smoker';
 
 export interface LevelConfig {
   id: number;
@@ -47,6 +55,13 @@ export interface LevelConfig {
   widenPasses: number;
   /** Sparse opposite-wall knock-downs that add loops (not open rooms). */
   loopCount: number;
+  /**
+   * Growing-tree random-pick chance (0 = long rivers, 1 = bushy).
+   * Defaults to 0.62 in the generator when omitted.
+   */
+  randomPick?: number;
+  /** Bonus countdown seconds. Defaults via bonusSecondsForLevel(). */
+  bonusSeconds?: number;
 }
 
 export type CharacterId =
