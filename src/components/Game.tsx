@@ -201,9 +201,14 @@ function GameRound({
     return () => window.removeEventListener('keydown', onKey);
   }, [player, maze.grid, moveTo, won, paused]);
 
+  // Wide boards keep a top/bottom HUD in landscape; square/tall boards use side rails.
+  const mazeCols = maze.grid[0]?.length ?? config.cols;
+  const mazeRows = maze.grid.length;
+  const mazeAspect = mazeCols > mazeRows ? 'maze-wide' : 'maze-fit-sides';
+
   return (
-    <div className={`screen play-screen theme-${config.theme}`}>
-      <header className="play-header">
+    <div className={`screen play-screen theme-${config.theme} ${mazeAspect}`}>
+      <header className="play-header play-rail-left">
         <button type="button" className="btn btn-ghost btn-icon" onClick={onHome} aria-label="Home">⌂</button>
         <div className="play-title">
           <span className="play-level">Level {levelId}</span>
@@ -216,20 +221,27 @@ function GameRound({
         <button type="button" className="btn btn-hint" onClick={onShop} disabled={won} aria-label="Open Aquarium Shop">🛒 Shop</button>
       </header>
 
-      {!won && (
-        <div className="play-bonus-row">
-          <BonusTimer remainingMs={bonusRemainingMs} active={bonusActive} paused={paused} />
-          <button
-            type="button"
-            className="btn btn-pause"
-            onClick={togglePaused}
-            aria-pressed={paused}
-            aria-label={paused ? 'Resume bonus timer and movement' : 'Pause bonus timer and movement'}
-          >
-            {paused ? '▶ Resume' : '⏸ Pause'}
-          </button>
-        </div>
-      )}
+      <aside className="play-rail-right">
+        {!won && (
+          <div className="play-bonus-row">
+            <BonusTimer remainingMs={bonusRemainingMs} active={bonusActive} paused={paused} />
+            <button
+              type="button"
+              className="btn btn-pause"
+              onClick={togglePaused}
+              aria-pressed={paused}
+              aria-label={paused ? 'Resume bonus timer and movement' : 'Pause bonus timer and movement'}
+            >
+              {paused ? '▶ Resume' : '⏸ Pause'}
+            </button>
+          </div>
+        )}
+        <footer className="play-footer">
+          <MuteButton muted={muted} onToggle={onToggleMute} />
+          <span className="round-coin-count">Found this maze: <strong>{roundCoins}</strong></span>
+          <button type="button" className="btn btn-secondary btn-lg" onClick={onRestart}>Restart</button>
+        </footer>
+      </aside>
 
       <div className="play-maze-stage">
         <MazeBoard
@@ -263,12 +275,6 @@ function GameRound({
           </div>
         )}
       </div>
-
-      <footer className="play-footer">
-        <MuteButton muted={muted} onToggle={onToggleMute} />
-        <span className="round-coin-count">Found this maze: <strong>{roundCoins}</strong></span>
-        <button type="button" className="btn btn-secondary btn-lg" onClick={onRestart}>Restart</button>
-      </footer>
 
       {won && (
         <WinModal
