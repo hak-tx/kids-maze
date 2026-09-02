@@ -11,6 +11,7 @@ interface WinModalProps {
   onHome: () => void;
   characterId: CharacterId;
   coinsCollected: number;
+  bonusHit: boolean;
   coinTotal: number;
   ownedCharacters: CharacterId[];
   onShop: () => void;
@@ -25,6 +26,7 @@ export function WinModal({
   onHome,
   characterId,
   coinsCollected,
+  bonusHit,
   coinTotal,
   ownedCharacters,
   onShop,
@@ -47,7 +49,28 @@ export function WinModal({
         <p className="win-sub">
           Level {levelId}: {levelName}
         </p>
-        <p className="win-coins">🪙 You found <strong>{coinsCollected}</strong> coin{coinsCollected === 1 ? '' : 's'}!</p>
+        {bonusHit ? (
+          <p className="win-coins win-coins-bonus">
+            🪙 You found <strong>{coinsCollected}</strong> coin{coinsCollected === 1 ? '' : 's'}
+            {' — '}
+            <span className="win-bonus-tag">2× bonus!</span>
+            {coinsCollected > 0 ? (
+              <>
+                {' '}
+                That&apos;s <strong>{coinsCollected * 2}</strong>!
+              </>
+            ) : (
+              <> Double coins!</>
+            )}
+          </p>
+        ) : (
+          <>
+            <p className="win-coins">
+              🪙 You found <strong>{coinsCollected}</strong> coin{coinsCollected === 1 ? '' : 's'}!
+            </p>
+            <p className="win-bonus-missed">Bonus time ran out — you still keep your coins!</p>
+          </>
+        )}
         {upgrade ? (
           <section className={`win-upgrade-offer rarity-${upgrade.rarity}`} aria-label="Character upgrade available">
             <div className="win-upgrade-art" aria-hidden="true">

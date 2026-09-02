@@ -56,6 +56,13 @@ export function HowTo({ onBack }: HowToProps) {
           <div>Explore every turn to find <strong>random coins</strong>, even inside dead ends.</div>
         </li>
         <li>
+          <span className="howto-icon" aria-hidden="true">⭐</span>
+          <div>
+            Race the <strong>bonus clock</strong>! Finish before it hits zero to{' '}
+            <strong>double your coins</strong>. If time runs out, keep swimming — you just miss the bonus.
+          </div>
+        </li>
+        <li>
           <span className="howto-icon" aria-hidden="true">🐠</span>
           <div>Spend saved coins in the <strong>Aquarium Shop</strong>. Collect swimmers from Common to Legendary—each upgrade has stronger magnet power!</div>
         </li>

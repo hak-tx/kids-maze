@@ -12,6 +12,7 @@ const DIFF_LABEL: Record<Difficulty, string> = {
   easy: 'Trail',
   medium: 'Trek',
   hard: 'Quest',
+  legend: 'Legend',
 };
 
 const THEME_ICON: Record<MazeTheme, string> = {
@@ -31,6 +32,14 @@ const THEME_ICON: Record<MazeTheme, string> = {
   dragon: '🐉',
   galaxy: '🪐',
   champion: '🏆',
+  pearl: '🤍',
+  shipwreck: '⚓',
+  bioluminescent: '🪼',
+  iceberg: '🧊',
+  mangrove: '🌴',
+  whirlpool: '🌀',
+  treasure: '🪙',
+  smoker: '🌋',
 };
 
 export function LevelSelect({
