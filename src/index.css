@@ -497,7 +497,7 @@ body {
 }
 .maze-cell.goal-cell {
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(132, 94, 247, 0.22), transparent 62%),
+    radial-gradient(circle at 50% 50%, rgba(255, 146, 43, 0.3), transparent 62%),
     radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.45), transparent 42%);
 }
 

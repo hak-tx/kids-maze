@@ -16,25 +16,76 @@ export function StartFlag({ size = 22 }: { size?: number }) {
   );
 }
 
-/** Spinning portal + star goal. */
+/** Five stubby cartoon arms — used for fill and a slightly larger outline. */
+function StarfishBody({ fill }: { fill: string }) {
+  return (
+    <>
+      <ellipse cx="16" cy="10.6" rx="3.7" ry="5.3" fill={fill} />
+      <ellipse cx="16" cy="10.6" rx="3.7" ry="5.3" fill={fill} transform="rotate(72 16 16)" />
+      <ellipse cx="16" cy="10.6" rx="3.7" ry="5.3" fill={fill} transform="rotate(144 16 16)" />
+      <ellipse cx="16" cy="10.6" rx="3.7" ry="5.3" fill={fill} transform="rotate(216 16 16)" />
+      <ellipse cx="16" cy="10.6" rx="3.7" ry="5.3" fill={fill} transform="rotate(288 16 16)" />
+      <circle cx="16" cy="16" r="5.4" fill={fill} />
+    </>
+  );
+}
+
+/** Spinning portal + cartoon starfish goal. */
 export function GoalPortal({ size = 22 }: { size?: number }) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 32 32"
+      overflow="visible"
       aria-hidden="true"
       className="goal-portal"
     >
-      <circle className="portal-ring" cx="16" cy="16" r="12" fill="none" stroke="#845ef7" strokeWidth="2.4" strokeDasharray="5 3" />
-      <circle className="portal-glow" cx="16" cy="16" r="8" fill="#e5dbff" />
-      <path
-        className="goal-star"
-        d="M16 7 L18.2 13.2 L24.8 13.4 L19.6 17.4 L21.6 23.6 L16 19.8 L10.4 23.6 L12.4 17.4 L7.2 13.4 L13.8 13.2 Z"
-        fill="#ffd43b"
-        stroke="#f59f00"
-        strokeWidth="0.8"
+      <defs>
+        <radialGradient
+          id="starfish-fill"
+          gradientUnits="userSpaceOnUse"
+          cx="13"
+          cy="12"
+          r="14"
+        >
+          <stop offset="0%" stopColor="#ffe066" />
+          <stop offset="48%" stopColor="#ff922b" />
+          <stop offset="100%" stopColor="#f76707" />
+        </radialGradient>
+      </defs>
+      <circle
+        className="portal-ring"
+        cx="16"
+        cy="16"
+        r="13"
+        fill="none"
+        stroke="#22b8cf"
+        strokeWidth="2.2"
+        strokeDasharray="5 3"
       />
+      <circle className="portal-glow" cx="16" cy="16" r="9.2" fill="#fff4c2" />
+      <g className="goal-star">
+        <g transform="translate(16 16) scale(1.07) translate(-16 -16)">
+          <StarfishBody fill="#d9480f" />
+        </g>
+        <StarfishBody fill="url(#starfish-fill)" />
+        <ellipse cx="16" cy="16.6" rx="4.3" ry="4" fill="#ffe8cc" opacity="0.9" />
+        <circle cx="16" cy="11.4" r="0.85" fill="#e8590c" opacity="0.55" />
+        <circle cx="20.4" cy="14.6" r="0.7" fill="#e8590c" opacity="0.48" />
+        <circle cx="11.6" cy="14.6" r="0.7" fill="#e8590c" opacity="0.48" />
+        <circle cx="13.55" cy="15.5" r="1.35" fill="#fff" />
+        <circle cx="18.45" cy="15.5" r="1.35" fill="#fff" />
+        <circle cx="13.8" cy="15.7" r="0.72" fill="#1a2340" />
+        <circle cx="18.7" cy="15.7" r="0.72" fill="#1a2340" />
+        <path
+          d="M13.9 18.15 Q16 20.05 18.1 18.15"
+          fill="none"
+          stroke="#c92a2a"
+          strokeWidth="0.85"
+          strokeLinecap="round"
+        />
+      </g>
     </svg>
   );
 }
