@@ -1176,6 +1176,19 @@ body {
     gap: 10px;
     min-height: 0;
     height: 100%;
+    padding: 10px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(142, 237, 255, 0.45);
+    background: linear-gradient(180deg, rgba(4, 54, 112, 0.9), rgba(3, 35, 82, 0.92));
+    box-shadow: 0 8px 22px rgba(0, 17, 55, 0.34);
+    backdrop-filter: blur(10px);
+  }
+  .play-screen.maze-fit-sides .play-rail-right .play-footer {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    padding: 0;
   }
   .play-screen.maze-fit-sides .play-bonus-row {
     order: unset;
